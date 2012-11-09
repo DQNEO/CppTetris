@@ -27,5 +27,6 @@ int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
         CW_USEDEFAULT, CW_USEDEFAULT, TODO, TODO,
         NULL, NULL, hInst, NULL);
     
+    ShowWindow(SW_SHOW);
     return 0;
 }
