@@ -27,6 +27,17 @@ BLOCK block[8] = {
     {4, {{0, -1},{1, 0}, {-1 ,0}}},  // T
 };
 
+typedef struct _TAG_STATUS {
+    int x;
+    int y;
+    int type;
+    int rotate;
+} STATUS;
+
+bool putBlock(STATUS s, bool action = false) {
+    
+}
+
 int board[12][25];
 
 void showBoard() {
