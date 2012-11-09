@@ -35,7 +35,35 @@ typedef struct _TAG_STATUS {
 } STATUS;
 
 bool putBlock(STATUS s, bool action = false) {
-    
+    if(board[s.x][s.y] != 0) {
+        return false;
+    }
+
+
+    if(action) {
+        board[s.x][s.y] = s.type;
+    }
+
+
+    for(int i = 0; i < 3; i++) {
+        int dx = block[s.type].p[i].x;
+        int dy = block[s.type].p[i].y;
+        int r = s.rotate % block[s.type].rotate;
+        for(int j = 0; j < r; j++) {
+            int nx = dx, ny = dy;
+            dx = ny; dy = -nx;
+        }
+        if(board[s.x + dx][s.y + dy] != 0) {
+            return false;
+        }
+        if(action) {
+            board[s.x + dx][s.y + dy] = s.type;
+        }
+    }
+    if(!action) {
+        putBlock(s, true);
+    }
+    return true;
 }
 
 int board[12][25];
@@ -61,6 +89,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                     }
                 }
             }
+            
+            // debug
+            STATUS s;
+            s.x = 5;
+            s.y = 10;
+            s.type = 5;
+            s.rotate = 3;
+            putBlock(s);
             HDC hdc = GetDC(hWnd);
             
             hMemDC = CreateCompatibleDC(hdc);
