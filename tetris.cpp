@@ -6,6 +6,8 @@ HWND hMainWindow;
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
+int board[12][25];
+
 typedef struct _TAG_POSITION {
     int x;
     int y;
@@ -66,7 +68,6 @@ bool putBlock(STATUS s, bool action = false) {
     return true;
 }
 
-int board[12][25];
 
 void showBoard() {
     for(int x = 1; x <= 10; x++) {
