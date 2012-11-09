@@ -153,6 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
         case WM_TIMER: {
             processInput();
+            InvalidateRect(hWnd, NULL, false);
             break;
         }
 
