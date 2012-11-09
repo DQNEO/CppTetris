@@ -190,8 +190,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
         case WM_TIMER: {
             static int w = 0;
-            processInput();
-            if (w % 5 == 0) {
+            if(w % 2 == 0) {
+                processInput();
+            }
+            if(w % 5 == 0) {
                 blockDown();
             }
             w++;
