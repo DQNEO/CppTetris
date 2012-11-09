@@ -36,6 +36,12 @@ typedef struct _TAG_STATUS {
     int rotate;
 } STATUS;
 
+STATUS current;
+
+int random(int max) {
+    return (int)(rand() / (RAND_MAX + 1.0) * max);
+}
+
 bool putBlock(STATUS s, bool action = false) {
     if(board[s.x][s.y] != 0) {
         return false;
@@ -107,13 +113,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 }
             }
             
-            // debug
-            STATUS s;
-            s.x = 5;
-            s.y = 10;
-            s.type = 5;
-            s.rotate = 3;
-            putBlock(s);
+            current.x = 5;
+            current.y = 21;
+            current.type = random(7) + 1;
+            current.rotate = random(4);
+            putBlock(current);
+
             HDC hdc = GetDC(hWnd);
             
             hMemDC = CreateCompatibleDC(hdc);
