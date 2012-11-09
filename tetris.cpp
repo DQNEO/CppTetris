@@ -44,7 +44,7 @@ int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
         CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.left,
         NULL, NULL, hInst, NULL);
     
-    ShowWindow(SW_SHOW);
+    ShowWindow(hMainWindow, SW_SHOW);
     
     MSG msg;
     while(GetMessage(&msg, NULL, 0, 0)) {
