@@ -19,6 +19,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             hBitmap = LoadBitmap(hInstance, "BLOCKS");
             hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
             
+            // debug
+            BitBlt(hMemDC, 0, 0, 24, 24, hBlockDC, 0, 0, SRCCOPY);
+            
             ReleaseDC(hWnd, hdc);
             break;
         }
