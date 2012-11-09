@@ -68,6 +68,22 @@ bool putBlock(STATUS s, bool action = false) {
     return true;
 }
 
+bool deleteBlock(STATUS s) {
+    board[s.x][s.y] = 0;
+
+    for(int i = 0; i < 3; i++) {
+        int dx = block[s.type].p[i].x;
+        int dy = block[s.type].p[i].y;
+        int r = s.rotate % block[s.type].rotate;
+        for(int j = 0; j < r; j++) {
+            int nx = dx, ny = dy;
+            dx = ny; dy = -nx;
+        }
+        board[s.x + dx][s.y + dy] = 0;
+    }
+
+    return true;
+}
 
 void showBoard() {
     for(int x = 1; x <= 10; x++) {
