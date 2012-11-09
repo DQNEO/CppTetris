@@ -28,5 +28,12 @@ int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
         NULL, NULL, hInst, NULL);
     
     ShowWindow(SW_SHOW);
+    
+    MSG msg;
+    while(GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
     return 0;
 }
