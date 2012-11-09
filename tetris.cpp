@@ -6,6 +6,17 @@ HWND hMainWindow;
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
+typedef struct _TAG_POSITION {
+    int x;
+    int y;
+} POSITION;
+
+typedef struct _TAG_BLOCK {
+    int rotate;
+    POSITION p[3];
+} BLOCK;
+
+
 int board[12][25];
 
 void showBoard() {
