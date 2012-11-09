@@ -189,8 +189,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             break;
         }
         case WM_TIMER: {
+            static int w = 0;
             processInput();
-            blockDown();
+            if (w % 5 == 0) {
+                blockDown();
+            }
+            w++;
+
             InvalidateRect(hWnd, NULL, false);
             break;
         }
