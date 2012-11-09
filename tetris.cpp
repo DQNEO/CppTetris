@@ -15,6 +15,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 24 * 10, 24 * 20);
             hMemPrev = (HBITMAP)SelectObject(hMemDC, hBitmap);
             
+            hBlockDC = CreateCompatibleDC(hdc);
+            hBitmap = LoadBitmap(hInstance, "BLOCKS");
+            hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
             
             ReleaseDC(hWnd, hdc);
             break;
@@ -23,6 +26,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             HBITMAP hBitmap = (HBITMAP)SelectObject(hMemDC, hMemPrev);
             DeleteObject(hBitmap);
             DeleteObject(hMemDC);
+            
+            hBitmap = (HBITMAP)SelectObject(hBlockDC, hBlockPrev);
+            DeleteObject(hBitmap);
+            DeleteObject(hBlockDC);
+            
             PostQuitMessage(0);
             break;
         }
