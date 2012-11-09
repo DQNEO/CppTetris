@@ -102,7 +102,13 @@ void showBoard() {
 bool processInput() {
     bool ret = false;
     STATUS n = current;
-    if(GetAsyncKeyState(VK_DOWN)) {
+    if(GetAsyncKeyState(VK_LEFT)) {
+        n.x--;
+    } else if(GetAsyncKeyState(VK_RIGHT)) {
+        n.x++;
+    } else if(GetAsyncKeyState(VK_UP)) {
+        n.rotate++;
+    } else if(GetAsyncKeyState(VK_DOWN)) {
         n.y--;
     }
 
