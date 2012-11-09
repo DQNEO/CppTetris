@@ -22,6 +22,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             ReleaseDC(hWnd, hdc);
             break;
         }
+        case WM_PAINT: {
+            break;
+        }
         case WM_DESTROY: {
             HBITMAP hBitmap = (HBITMAP)SelectObject(hMemDC, hMemPrev);
             DeleteObject(hBitmap);
