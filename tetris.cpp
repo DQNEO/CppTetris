@@ -123,6 +123,18 @@ bool processInput() {
 }
 
 
+void gameOver() {
+    KillTimer(hMainWindow, 100);
+    for(int x = 1; x <= 10;x++) {
+        for(int y = 1; y <= 20; y++) {
+            if(board[x][y] != 0) {
+                board[x][y] = 1;
+            }
+        }
+    }
+    InvalidateRect(hMainWindow, NULL, false);
+}
+
 void blockDown() {
     deleteBlock(current);
     current.y--;
@@ -135,7 +147,7 @@ void blockDown() {
         current.type = random(7) + 1;
         current.rotate = random(4);
         if(!putBlock(current)) {
-            //gameOver();
+            gameOver();
         }
     }
 }
