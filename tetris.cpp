@@ -3,9 +3,20 @@
 HINSTANCE hInstance;
 HWND hMainWindow;
 
+HDC hMemDC, hBlockDC;
+HBITMAP hMemPrev, hBlockPrev;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
         case WM_CREATE: {
+            HDC hdc = GetDC(hWnd);
+            
+            hMemDC = CreateCompatibleDC(hdc);
+            HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 24 * 10, 24 * 20);
+            hMemPrev = (HBITMAP)SelectObject(hMemDC, hBitmap);
+            
+            
+            ReleaseDC(hWnd, hdc);
             break;
         }
         case WM_DESTROY:
