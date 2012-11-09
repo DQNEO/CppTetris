@@ -5,6 +5,9 @@ HWND hMainWindow;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
+        case WM_CREATE: {
+            break;
+        }
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
