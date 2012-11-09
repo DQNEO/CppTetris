@@ -137,12 +137,33 @@ void gameOver() {
     InvalidateRect(hMainWindow, NULL, false);
 }
 
+void deleteLine() {
+    for(int y = 1; y < 23; y++) {
+        bool flag = true;
+        for(int x = 1;x <= 10; x++) {
+            if(board[x][y] == 0) {
+                flag = false;
+            }
+        }
+        if(flag) {
+            for(int j = y; j < 23; j++) {
+                for(int i = 1; i <= 10; i++) {
+                    board[i][j] = board[i][j + 1];
+                }
+            }
+            y--;
+        }
+    }
+}
+
 void blockDown() {
     deleteBlock(current);
     current.y--;
     if(!putBlock(current)) {
         current.y++;
         putBlock(current);
+        
+        deleteLine();
         
         current.x = 5;
         current.y = 21;
