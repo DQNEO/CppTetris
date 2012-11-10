@@ -1,6 +1,10 @@
 #include <windows.h>
 
+HINSTANCE hInstance;
+HWND hMainWindow;
+
 int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
+    hInstance = hInst;
     WNDCLASSEX wc;
     static LPCTSTR pClassName = "NicoNicoProgramming2";  // ƒNƒ‰ƒX–¼
 
@@ -19,5 +23,9 @@ int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
 
     if (!RegisterClassEx(&wc)) return FALSE;             // “o˜^
 
+    hMainWindow = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
+        CW_USEDEFAULT, CW_USEDEFAULT, TODO, TODO,
+        NULL, NULL, hInst, NULL);
+    
     return 0;
 }
