@@ -98,7 +98,7 @@ int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
     AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, false, 0);
 
     hMainWindow = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
-        CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.left,
+        CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.top,
         NULL, NULL, hInst, NULL);
     
     ShowWindow(hMainWindow, SW_SHOW);
