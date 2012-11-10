@@ -121,6 +121,7 @@ bool processInput() {
             putBlock(current);
         }
     }
+    
     return ret;
 }
 
@@ -145,6 +146,7 @@ void deleteLine() {
                 flag = false;
             }
         }
+        
         if(flag) {
             for(int j = y; j < 23; j++) {
                 for(int i = 1; i <= 10; i++) {
@@ -222,7 +224,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 blockDown();
             }
             w++;
-
+            
             InvalidateRect(hWnd, NULL, false);
             break;
         }
