@@ -34,8 +34,14 @@ int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
 
     if (!RegisterClassEx(&wc)) return FALSE;             // “o˜^
 
+    RECT r;
+    r.left = r.top = 0;
+    r.right = 24 * 10;
+    r.bottom = 24 * 20;
+    AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, false, 0);
+
     hMainWindow = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
-        CW_USEDEFAULT, CW_USEDEFAULT, TODO, TODO,
+        CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.left,
         NULL, NULL, hInst, NULL);
     
     ShowWindow(SW_SHOW);
