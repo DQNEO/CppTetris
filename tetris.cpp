@@ -110,6 +110,7 @@ bool processInput() {
         n.rotate++;
     } else if(GetAsyncKeyState(VK_DOWN)) {
         n.y--;
+        ret = true;
     }
 
     if(n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
@@ -120,6 +121,7 @@ bool processInput() {
             putBlock(current);
         }
     }
+    return ret;
 }
 
 
@@ -191,7 +193,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         case WM_TIMER: {
             static int w = 0;
             if(w % 2 == 0) {
-                processInput();
+                if(processInput()) {
+                    w = 0;
+                }
             }
             if(w % 5 == 0) {
                 blockDown();
