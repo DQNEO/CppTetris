@@ -122,6 +122,25 @@ bool processInput() {
     }
 }
 
+
+void blockDown() {
+    deleteBlock(current);
+    current.y--;
+    if(!putBlock(current)) {
+        current.y++;
+        putBlock(current);
+        
+        current.x = 5;
+        current.y = 21;
+        current.type = random(7) + 1;
+        current.rotate = random(4);
+        if(!putBlock(current)) {
+            //gameOver();
+        }
+    }
+}
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
         case WM_CREATE: {
@@ -159,6 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
         case WM_TIMER: {
             processInput();
+            blockDown();
             InvalidateRect(hWnd, NULL, false);
             break;
         }
