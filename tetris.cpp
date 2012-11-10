@@ -99,6 +99,22 @@ void showBoard() {
     }
 }
 
+bool processInput() {
+    bool ret = false;
+    STATUS n = current;
+    if(GetAsyncKeyState(VK_DOWN)) {
+        n.y--;
+    }
+
+    if(n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
+        deleteBlock(current);
+        if(putBlock(n)) {
+            current = n;
+        } else {
+            putBlock(current);
+        }
+    }
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
@@ -135,6 +151,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             ReleaseDC(hWnd, hdc);
             break;
         }
+        case WM_TIMER: {
+            processInput();
+            break;
+        }
+
         case WM_PAINT: {
             showBoard();
             PAINTSTRUCT ps;
@@ -192,12 +213,15 @@ int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
         NULL, NULL, hInst, NULL);
     
     ShowWindow(hMainWindow, SW_SHOW);
-    
+
+    SetTimer(hMainWindow, 100, 1000 /30, NULL);
     MSG msg;
     while(GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+    
+    KillTimer(hMainWindow, 100);
 
     return 0;
 }
