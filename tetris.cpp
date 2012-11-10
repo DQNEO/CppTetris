@@ -6,9 +6,29 @@ HWND hMainWindow;
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
+int board[12][25];
+
+void showBoard() {
+    for(int x = 1; x <= 10; x++) {
+        for(int y = 1; y <= 20; y++) {
+            BitBlt(hMemDC, (x - 1) * 24, (20 -y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
+        }
+    }
+}
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
         case WM_CREATE: {
+            for(int x = 0; x < 12; x++) {
+                for(int y = 0; y < 25; y++) {
+                    if(x == 0 || x == 11 || y == 0) {
+                        board[x][y] = 1;
+                    } else {
+                        board[x][y] = 0;
+                    }
+                }
+            }
             HDC hdc = GetDC(hWnd);
             
             hMemDC = CreateCompatibleDC(hdc);
@@ -26,6 +46,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             break;
         }
         case WM_PAINT: {
+            showBoard();
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             BitBlt(hdc, 0, 0, 24 * 10, 24 * 20, hMemDC, 0, 0, SRCCOPY);
