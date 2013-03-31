@@ -1,5 +1,10 @@
 #include <windows.h>
 
+#define bool int
+#define true 1
+#define false 0
+
+
 HINSTANCE hInstance;
 HWND hMainWindow;
 
@@ -42,7 +47,9 @@ int random(int max) {
     return (int)(rand() / (RAND_MAX + 1.0) * max);
 }
 
-bool putBlock(STATUS s, bool action = false) {
+bool putBlock(STATUS s, bool action) {
+    int i,j;
+
     if(board[s.x][s.y] != 0) {
         return false;
     }
@@ -53,11 +60,11 @@ bool putBlock(STATUS s, bool action = false) {
     }
 
 
-    for(int i = 0; i < 3; i++) {
+    for(i = 0; i < 3; i++) {
         int dx = block[s.type].p[i].x;
         int dy = block[s.type].p[i].y;
         int r = s.rotate % block[s.type].rotate;
-        for(int j = 0; j < r; j++) {
+        for(j = 0; j < r; j++) {
             int nx = dx, ny = dy;
             dx = ny; dy = -nx;
         }
@@ -75,13 +82,14 @@ bool putBlock(STATUS s, bool action = false) {
 }
 
 bool deleteBlock(STATUS s) {
+    int i,j;
     board[s.x][s.y] = 0;
 
-    for(int i = 0; i < 3; i++) {
+    for(i = 0; i < 3; i++) {
         int dx = block[s.type].p[i].x;
         int dy = block[s.type].p[i].y;
         int r = s.rotate % block[s.type].rotate;
-        for(int j = 0; j < r; j++) {
+        for(j = 0; j < r; j++) {
             int nx = dx, ny = dy;
             dx = ny; dy = -nx;
         }
@@ -92,8 +100,9 @@ bool deleteBlock(STATUS s) {
 }
 
 void showBoard() {
-    for(int x = 1; x <= 10; x++) {
-        for(int y = 1; y <= 20; y++) {
+    int x,y;
+    for(x = 1; x <= 10; x++) {
+        for(y = 1; y <= 20; y++) {
             BitBlt(hMemDC, (x - 1) * 24, (20 -y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
         }
     }
@@ -115,10 +124,10 @@ bool processInput() {
 
     if(n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
         deleteBlock(current);
-        if(putBlock(n)) {
+        if(putBlock(n, false)) {
             current = n;
         } else {
-            putBlock(current);
+            putBlock(current, false);
         }
     }
     
@@ -127,9 +136,10 @@ bool processInput() {
 
 
 void gameOver() {
+    int x,y;
     KillTimer(hMainWindow, 100);
-    for(int x = 1; x <= 10;x++) {
-        for(int y = 1; y <= 20; y++) {
+    for(x = 1; x <= 10;x++) {
+        for(y = 1; y <= 20; y++) {
             if(board[x][y] != 0) {
                 board[x][y] = 1;
             }
@@ -139,17 +149,18 @@ void gameOver() {
 }
 
 void deleteLine() {
-    for(int y = 1; y < 23; y++) {
+    int y,x,i,j;
+    for(y = 1; y < 23; y++) {
         bool flag = true;
-        for(int x = 1;x <= 10; x++) {
+        for(x = 1;x <= 10; x++) {
             if(board[x][y] == 0) {
                 flag = false;
             }
         }
         
         if(flag) {
-            for(int j = y; j < 23; j++) {
-                for(int i = 1; i <= 10; i++) {
+            for(j = y; j < 23; j++) {
+                for(i = 1; i <= 10; i++) {
                     board[i][j] = board[i][j + 1];
                 }
             }
@@ -161,9 +172,9 @@ void deleteLine() {
 void blockDown() {
     deleteBlock(current);
     current.y--;
-    if(!putBlock(current)) {
+    if(!putBlock(current, false)) {
         current.y++;
-        putBlock(current);
+        putBlock(current, false);
         
         deleteLine();
         
@@ -171,7 +182,7 @@ void blockDown() {
         current.y = 21;
         current.type = random(7) + 1;
         current.rotate = random(4);
-        if(!putBlock(current)) {
+        if(!putBlock(current, false)) {
             gameOver();
         }
     }
@@ -181,8 +192,9 @@ void blockDown() {
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
         case WM_CREATE: {
-            for(int x = 0; x < 12; x++) {
-                for(int y = 0; y < 25; y++) {
+            int x,y;
+            for(x = 0; x < 12; x++) {
+                for(y = 0; y < 25; y++) {
                     if(x == 0 || x == 11 || y == 0) {
                         board[x][y] = 1;
                     } else {
@@ -195,7 +207,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             current.y = 21;
             current.type = random(7) + 1;
             current.rotate = random(4);
-            putBlock(current);
+            putBlock(current, false);
 
             HDC hdc = GetDC(hWnd);
             
@@ -255,7 +267,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return 0;
 }
 
-int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
     hInstance = hInst;
     WNDCLASSEX wc;
     static LPCTSTR pClassName = "NicoNicoProgramming2";  // ƒNƒ‰ƒX–¼
