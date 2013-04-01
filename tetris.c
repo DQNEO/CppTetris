@@ -142,6 +142,8 @@ bool processInput() {
     } else if(GetAsyncKeyState(VK_RIGHT)) {
         n.x++;
     } else if(GetAsyncKeyState(VK_UP)) {
+        n.y++;
+    } else if(GetAsyncKeyState(VK_SPACE)) {
         n.rotate++;
     } else if(GetAsyncKeyState(VK_DOWN)) {
         n.y--;
