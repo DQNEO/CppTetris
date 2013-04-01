@@ -4,25 +4,46 @@
 #define true 1
 #define false 0
 
-
-HINSTANCE hInstance;
-HWND hMainWindow;
-
-HDC hMemDC, hBlockDC;
-HBITMAP hMemPrev, hBlockPrev;
-
+/**
+ * 盤面(12x25)データ構造体
+ * 0:黒
+ * 1-7:ブロックのタイプ
+ */
 int board[12][25];
 
+/**
+ * 位置を表す構造体
+ */
 typedef struct _TAG_POSITION {
     int x;
     int y;
 } POSITION;
 
+/**
+ * ブロックを表す構造体
+ */
 typedef struct _TAG_BLOCK {
     int rotate;
     POSITION p[3];
 } BLOCK;
 
+
+/**
+ * 現在操作中のブロックを表す構造体
+ */
+typedef struct _TAG_STATUS {
+    int x;
+    int y;
+    int type;
+    int rotate;
+} STATUS;
+
+STATUS current;
+
+/**
+ * ブロックの全種類を定義する
+ * (ただし0は黒背景を表す)
+ */
 BLOCK block[8] = {
     {1, {{0,  0},{0, 0}, {0 ,0}}},  // null
     {2, {{0, -1},{0, 1}, {0 ,2}}},  // tetris
@@ -34,19 +55,21 @@ BLOCK block[8] = {
     {4, {{0, -1},{1, 0}, {-1 ,0}}},  // T
 };
 
-typedef struct _TAG_STATUS {
-    int x;
-    int y;
-    int type;
-    int rotate;
-} STATUS;
 
-STATUS current;
+/* おまじない系のグローバル変数 */
+HINSTANCE hInstance;
+HWND hMainWindow;
 
+HDC hMemDC, hBlockDC;
+HBITMAP hMemPrev, hBlockPrev;
+
+
+/* 乱数発生関数 */
 int random(int max) {
     return (int)(rand() / (RAND_MAX + 1.0) * max);
 }
 
+/* ブロックを置いてみる処理 */
 bool putBlock(STATUS s, bool action) {
     int i,j;
 
@@ -81,6 +104,7 @@ bool putBlock(STATUS s, bool action) {
     return true;
 }
 
+/* カレントブロックを一度消す */
 bool deleteBlock(STATUS s) {
     int i,j;
     board[s.x][s.y] = 0;
@@ -99,6 +123,7 @@ bool deleteBlock(STATUS s) {
     return true;
 }
 
+/* 盤面データを描画する */
 void showBoard() {
     int x,y;
     for(x = 1; x <= 10; x++) {
@@ -108,6 +133,7 @@ void showBoard() {
     }
 }
 
+/* ユーザからのキー入力を取り扱う */
 bool processInput() {
     bool ret = false;
     STATUS n = current;
@@ -134,7 +160,7 @@ bool processInput() {
     return ret;
 }
 
-
+/* ゲームオーバーになったときに全ブロックを赤く塗る */
 void gameOver() {
     int x,y;
     KillTimer(hMainWindow, 100);
@@ -148,6 +174,7 @@ void gameOver() {
     InvalidateRect(hMainWindow, NULL, false);
 }
 
+/* 段がそろった時に削除する処理 */
 void deleteLine() {
     int y,x,i,j;
     for(y = 1; y < 23; y++) {
@@ -169,6 +196,7 @@ void deleteLine() {
     }
 }
 
+/* カレントブロックの自然落下 */
 void blockDown() {
     deleteBlock(current);
     current.y--;
@@ -188,7 +216,9 @@ void blockDown() {
     }
 }
 
-
+/**
+ * イベント発生時に呼ばれるコールバック関数
+ */
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
         case WM_CREATE: {
@@ -267,6 +297,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return 0;
 }
 
+/**
+ * アプリケーションの起動処理
+ * 中身はほとんどおまじない。
+ */
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
     hInstance = hInst;
     WNDCLASSEX wc;
@@ -310,3 +344,4 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdS
 
     return 0;
 }
+
