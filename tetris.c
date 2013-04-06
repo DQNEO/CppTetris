@@ -95,15 +95,20 @@ void blockDown() {
         return;
     }
 
+    //置けなかったら、着地処理
     current.y++;
     putBlock(current, FALSE);
     
+    //完成した段があれば削除
     deleteLine();
     
+    //新しいブロックを生成して
     current.x = 5;
     current.y = 21;
     current.type = random(7) + 1;
     current.rotate = random(4);
+    //画面トップに置いてみる。
+    //置けなければゲームオーバー
     if(!putBlock(current, FALSE)) {
         gameOver();
     }
