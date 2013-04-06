@@ -89,20 +89,6 @@ BOOL processInput() {
     return ret;
 }
 
-/* ゲームオーバーになったときに全ブロックを赤く塗る */
-void gameOver() {
-    int x,y;
-    KillTimer(hMainWindow, 100);
-    for(x = 1; x <= 10;x++) {
-        for(y = 1; y <= 20; y++) {
-            if(board[x][y] != 0) {
-                board[x][y] = 1;
-            }
-        }
-    }
-    InvalidateRect(hMainWindow, NULL, FALSE);
-}
-
 /* 段がそろった時に削除する処理 */
 void deleteLine() {
     int y,x,i,j;
@@ -144,6 +130,21 @@ void blockDown() {
         }
     }
 }
+
+/* ゲームオーバーになったときに全ブロックを赤く塗る */
+void gameOver() {
+    int x,y;
+    KillTimer(hMainWindow, 100);
+    for(x = 1; x <= 10;x++) {
+        for(y = 1; y <= 20; y++) {
+            if(board[x][y] != 0) {
+                board[x][y] = 1;
+            }
+        }
+    }
+    InvalidateRect(hMainWindow, NULL, FALSE);
+}
+
 
 /* 盤面データを画面に描画する */
 void showBoard() {
