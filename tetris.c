@@ -166,7 +166,7 @@ BOOL processInput() {
 
 
 /* ”Õ–Êƒf[ƒ^‚ğ‰æ–Ê‚É•`‰æ‚·‚é */
-void showBoard() {
+void boardRender() {
     int x,y;
     for(x = 1; x <= 10; x++) {
         for(y = 1; y <= 20; y++) {
@@ -227,7 +227,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         }
 
         case WM_PAINT: {
-            showBoard();
+            boardRender();
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             BitBlt(hdc, 0, 0, 24 * 10, 24 * 20, hMemDC, 0, 0, SRCCOPY);

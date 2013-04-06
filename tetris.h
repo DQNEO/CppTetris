@@ -65,7 +65,7 @@ BLOCK block[8] = {
 int random(int);
 BOOL putBlock(STATUS, BOOL);
 BOOL boardDeleteCurrentBlock(STATUS);
-void showBoard();
+void boardRender();
 BOOL proccessInput();
 void gameOver();
 void deleteLine();
