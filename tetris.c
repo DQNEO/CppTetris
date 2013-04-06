@@ -60,16 +60,6 @@ BOOL deleteBlock(STATUS s) {
     return TRUE;
 }
 
-/* 盤面データを描画する */
-void showBoard() {
-    int x,y;
-    for(x = 1; x <= 10; x++) {
-        for(y = 1; y <= 20; y++) {
-            BitBlt(hMemDC, (x - 1) * 24, (20 -y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
-        }
-    }
-}
-
 /* ユーザからのキー入力を取り扱う */
 BOOL processInput() {
     BOOL ret = FALSE;
@@ -151,6 +141,16 @@ void blockDown() {
         current.rotate = random(4);
         if(!putBlock(current, FALSE)) {
             gameOver();
+        }
+    }
+}
+
+/* 盤面データを描画する */
+void showBoard() {
+    int x,y;
+    for(x = 1; x <= 10; x++) {
+        for(y = 1; y <= 20; y++) {
+            BitBlt(hMemDC, (x - 1) * 24, (20 -y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
         }
     }
 }
