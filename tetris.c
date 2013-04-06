@@ -82,10 +82,15 @@ void deleteLine() {
     }
 }
 
-/* カレントブロックの自然落下 */
+/* カレントブロックの１マス自然落下 */
 void blockDown() {
+    //現在位置のブロックを一度消して
     deleteBlock(current);
+    //Y座標を１下げて
     current.y--;
+
+    //ブロックを置いてみる。
+    //置けたら１マス自然落下成功したということ。
     if(!putBlock(current, FALSE)) {
         current.y++;
         putBlock(current, FALSE);
