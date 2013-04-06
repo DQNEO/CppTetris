@@ -172,12 +172,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 }
             }
             
-            current.x = 5;
-            current.y = 21;
-            current.type = random(7) + 1;
-            current.rotate = random(4);
-            putBlock(current, FALSE);
-
             HDC hdc = GetDC(hWnd);
             
             hMemDC = CreateCompatibleDC(hdc);
