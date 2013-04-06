@@ -68,6 +68,6 @@ BOOL boardDeleteCurrentBlock(STATUS);
 void boardRender();
 BOOL proccessInput();
 void gameOver();
-void deleteLine();
+void deleteCompleteLines();
 void blockFall();
 

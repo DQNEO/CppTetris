@@ -61,7 +61,7 @@ BOOL boardDeleteCurrentBlock(STATUS s) {
 }
 
 /* 落下直後に段がそろった時に削除する処理 */
-void deleteLine() {
+void deleteCompleteLines() {
     int y,x,i,j;
     for(y = 1; y < 23; y++) {
         BOOL flag = TRUE;
@@ -100,7 +100,7 @@ void blockFall() {
     putBlock(current, FALSE);
     
     //完成した段があれば削除
-    deleteLine();
+    deleteCompleteLines();
     
     //新しいブロックを生成して
     current.x = 5;
