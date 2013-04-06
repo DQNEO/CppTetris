@@ -94,18 +94,19 @@ void blockDown() {
     if(putBlock(current, FALSE)) {
         return;
     }
-        current.y++;
-        putBlock(current, FALSE);
-        
-        deleteLine();
-        
-        current.x = 5;
-        current.y = 21;
-        current.type = random(7) + 1;
-        current.rotate = random(4);
-        if(!putBlock(current, FALSE)) {
-            gameOver();
-        }
+
+    current.y++;
+    putBlock(current, FALSE);
+    
+    deleteLine();
+    
+    current.x = 5;
+    current.y = 21;
+    current.type = random(7) + 1;
+    current.rotate = random(4);
+    if(!putBlock(current, FALSE)) {
+        gameOver();
+    }
     
 }
 
