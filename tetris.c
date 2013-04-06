@@ -83,7 +83,7 @@ void deleteCompleteLines() {
 }
 
 /* カレントブロックの１マス自然落下 */
-void blockFall(HWND hWnd) {
+BOOL blockFall() {
     //現在位置のブロックを一度消して
     boardDeleteCurrentBlock(current);
     //Y座標を１下げて
@@ -92,7 +92,7 @@ void blockFall(HWND hWnd) {
     //ブロックを置いてみる。
     //置けたら１マス自然落下成功したということ。
     if(putBlock(current, FALSE)) {
-        return;
+        return TRUE;
     }
 
     //置けなかったら、着地処理
@@ -110,7 +110,7 @@ void blockFall(HWND hWnd) {
     //画面トップに置いてみる。
     //置けなければゲームオーバー
     if(!putBlock(current, FALSE)) {
-        gameOver(hWnd);
+        return FALSE;
     }
     
 }
@@ -218,7 +218,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 }
             }
             if(w % 5 == 0) {
-                blockFall(hWnd);
+                if(!blockFall()) {
+                    gameOver(hWnd);
+                }
             }
             w++;
             
