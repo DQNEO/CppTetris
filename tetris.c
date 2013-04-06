@@ -175,22 +175,27 @@ void showBoard() {
     }
 }
 
+/* 盤面初期化 */
+void boardInit() {
+    int x,y;
+    for(x = 0; x < 12; x++) {
+        for(y = 0; y < 25; y++) {
+            if(x == 0 || x == 11 || y == 0) {
+                board[x][y] = 1;
+            } else {
+                board[x][y] = 0;
+            }
+        }
+    }
+}
+
 /**
  * イベント発生時に呼ばれるコールバック関数
  */
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch(msg) {
         case WM_CREATE: {
-            int x,y;
-            for(x = 0; x < 12; x++) {
-                for(y = 0; y < 25; y++) {
-                    if(x == 0 || x == 11 || y == 0) {
-                        board[x][y] = 1;
-                    } else {
-                        board[x][y] = 0;
-                    }
-                }
-            }
+            boardInit();
             
             HDC hdc = GetDC(hWnd);
             
