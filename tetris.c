@@ -145,7 +145,7 @@ void blockDown() {
     }
 }
 
-/* 盤面データを描画する */
+/* 盤面データを画面に描画する */
 void showBoard() {
     int x,y;
     for(x = 1; x <= 10; x++) {
