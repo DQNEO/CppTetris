@@ -1,5 +1,12 @@
 #include <windows.h>
 
+/* Windowsおまじない系のグローバル変数 */
+HINSTANCE hInstance;
+HWND hMainWindow;
+
+HDC hMemDC, hBlockDC;
+HBITMAP hMemPrev, hBlockPrev;
+
 /* 構造体の宣言 */
 
 /**
@@ -55,13 +62,6 @@ BLOCK block[8] = {
     {1, {{0,  1},{1, 0}, {1 ,1}}},  // square
     {4, {{0, -1},{1, 0}, {-1 ,0}}},  // T
 };
-
-/* おまじない系のグローバル変数 */
-HINSTANCE hInstance;
-HWND hMainWindow;
-
-HDC hMemDC, hBlockDC;
-HBITMAP hMemPrev, hBlockPrev;
 
 /* 関数プロトタイプ宣言 */
 int random(int);
