@@ -235,7 +235,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             break;
         }
         case WM_DESTROY: {
-            HBITMAP hBitmap = (HBITMAP)SelectObject(hMemDC, hMemPrev);
+            HBITMAP hBitmap;
+            hBitmap = (HBITMAP)SelectObject(hMemDC, hMemPrev);
             DeleteObject(hBitmap);
             DeleteObject(hMemDC);
             
