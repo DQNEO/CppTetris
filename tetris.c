@@ -91,7 +91,9 @@ void blockDown() {
 
     //ブロックを置いてみる。
     //置けたら１マス自然落下成功したということ。
-    if(!putBlock(current, FALSE)) {
+    if(putBlock(current, FALSE)) {
+        return;
+    }
         current.y++;
         putBlock(current, FALSE);
         
@@ -104,7 +106,7 @@ void blockDown() {
         if(!putBlock(current, FALSE)) {
             gameOver();
         }
-    }
+    
 }
 
 /**
