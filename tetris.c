@@ -60,35 +60,6 @@ BOOL deleteBlock(STATUS s) {
     return TRUE;
 }
 
-/* ユーザからのキー入力を取り扱う */
-BOOL processInput() {
-    BOOL ret = FALSE;
-    STATUS n = current;
-    if(GetAsyncKeyState(VK_LEFT)) {
-        n.x--;
-    } else if(GetAsyncKeyState(VK_RIGHT)) {
-        n.x++;
-    } else if(GetAsyncKeyState(VK_UP)) {
-        n.y++;
-    } else if(GetAsyncKeyState(VK_SPACE)) {
-        n.rotate++;
-    } else if(GetAsyncKeyState(VK_DOWN)) {
-        n.y--;
-        ret = TRUE;
-    }
-
-    if(n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
-        deleteBlock(current);
-        if(putBlock(n, FALSE)) {
-            current = n;
-        } else {
-            putBlock(current, FALSE);
-        }
-    }
-    
-    return ret;
-}
-
 /* 段がそろった時に削除する処理 */
 void deleteLine() {
     int y,x,i,j;
@@ -143,6 +114,35 @@ void gameOver() {
         }
     }
     InvalidateRect(hMainWindow, NULL, FALSE);
+}
+
+/* ユーザからのキー入力を取り扱う */
+BOOL processInput() {
+    BOOL ret = FALSE;
+    STATUS n = current;
+    if(GetAsyncKeyState(VK_LEFT)) {
+        n.x--;
+    } else if(GetAsyncKeyState(VK_RIGHT)) {
+        n.x++;
+    } else if(GetAsyncKeyState(VK_UP)) {
+        n.y++;
+    } else if(GetAsyncKeyState(VK_SPACE)) {
+        n.rotate++;
+    } else if(GetAsyncKeyState(VK_DOWN)) {
+        n.y--;
+        ret = TRUE;
+    }
+
+    if(n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
+        deleteBlock(current);
+        if(putBlock(n, FALSE)) {
+            current = n;
+        } else {
+            putBlock(current, FALSE);
+        }
+    }
+    
+    return ret;
 }
 
 
