@@ -69,5 +69,5 @@ void boardRender();
 BOOL proccessInput();
 void gameOver();
 void deleteLine();
-void blockDown();
+void blockFall();
 

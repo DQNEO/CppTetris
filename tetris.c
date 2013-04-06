@@ -83,7 +83,7 @@ void deleteLine() {
 }
 
 /* カレントブロックの１マス自然落下 */
-void blockDown() {
+void blockFall() {
     //現在位置のブロックを一度消して
     boardDeleteCurrentBlock(current);
     //Y座標を１下げて
@@ -218,7 +218,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 }
             }
             if(w % 5 == 0) {
-                blockDown();
+                blockFall();
             }
             w++;
             
