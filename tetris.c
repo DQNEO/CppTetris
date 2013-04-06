@@ -58,6 +58,15 @@ HWND hMainWindow;
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
+int random(int);
+BOOL putBlock(STATUS, BOOL);
+BOOL deleteBlock(STATUS);
+void showBoard();
+BOOL proccessInput();
+void gameOver();
+void deleteLine();
+void blockDown();
+
 
 /* óêêîî≠ê∂ä÷êî */
 int random(int max) {
