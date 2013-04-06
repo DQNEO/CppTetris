@@ -1,9 +1,5 @@
 #include <windows.h>
 
-#define bool int
-#define true 1
-#define false 0
-
 /**
  * 盤面(12x25)データ構造体
  * 0:黒
@@ -55,7 +51,6 @@ BLOCK block[8] = {
     {4, {{0, -1},{1, 0}, {-1 ,0}}},  // T
 };
 
-
 /* おまじない系のグローバル変数 */
 HINSTANCE hInstance;
 HWND hMainWindow;
@@ -70,11 +65,11 @@ int random(int max) {
 }
 
 /* ブロックを置いてみる処理 */
-bool putBlock(STATUS s, bool action) {
+BOOL putBlock(STATUS s, BOOL action) {
     int i,j;
 
     if(board[s.x][s.y] != 0) {
-        return false;
+        return FALSE;
     }
 
 
@@ -92,20 +87,20 @@ bool putBlock(STATUS s, bool action) {
             dx = ny; dy = -nx;
         }
         if(board[s.x + dx][s.y + dy] != 0) {
-            return false;
+            return FALSE;
         }
         if(action) {
             board[s.x + dx][s.y + dy] = s.type;
         }
     }
     if(!action) {
-        putBlock(s, true);
+        putBlock(s, TRUE);
     }
-    return true;
+    return TRUE;
 }
 
 /* カレントブロックを一度消す */
-bool deleteBlock(STATUS s) {
+BOOL deleteBlock(STATUS s) {
     int i,j;
     board[s.x][s.y] = 0;
 
@@ -120,7 +115,7 @@ bool deleteBlock(STATUS s) {
         board[s.x + dx][s.y + dy] = 0;
     }
 
-    return true;
+    return TRUE;
 }
 
 /* 盤面データを描画する */
@@ -134,8 +129,8 @@ void showBoard() {
 }
 
 /* ユーザからのキー入力を取り扱う */
-bool processInput() {
-    bool ret = false;
+BOOL processInput() {
+    BOOL ret = FALSE;
     STATUS n = current;
     if(GetAsyncKeyState(VK_LEFT)) {
         n.x--;
@@ -147,15 +142,15 @@ bool processInput() {
         n.rotate++;
     } else if(GetAsyncKeyState(VK_DOWN)) {
         n.y--;
-        ret = true;
+        ret = TRUE;
     }
 
     if(n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
         deleteBlock(current);
-        if(putBlock(n, false)) {
+        if(putBlock(n, FALSE)) {
             current = n;
         } else {
-            putBlock(current, false);
+            putBlock(current, FALSE);
         }
     }
     
@@ -173,17 +168,17 @@ void gameOver() {
             }
         }
     }
-    InvalidateRect(hMainWindow, NULL, false);
+    InvalidateRect(hMainWindow, NULL, FALSE);
 }
 
 /* 段がそろった時に削除する処理 */
 void deleteLine() {
     int y,x,i,j;
     for(y = 1; y < 23; y++) {
-        bool flag = true;
+        BOOL flag = TRUE;
         for(x = 1;x <= 10; x++) {
             if(board[x][y] == 0) {
-                flag = false;
+                flag = FALSE;
             }
         }
         
@@ -202,9 +197,9 @@ void deleteLine() {
 void blockDown() {
     deleteBlock(current);
     current.y--;
-    if(!putBlock(current, false)) {
+    if(!putBlock(current, FALSE)) {
         current.y++;
-        putBlock(current, false);
+        putBlock(current, FALSE);
         
         deleteLine();
         
@@ -212,7 +207,7 @@ void blockDown() {
         current.y = 21;
         current.type = random(7) + 1;
         current.rotate = random(4);
-        if(!putBlock(current, false)) {
+        if(!putBlock(current, FALSE)) {
             gameOver();
         }
     }
@@ -239,7 +234,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             current.y = 21;
             current.type = random(7) + 1;
             current.rotate = random(4);
-            putBlock(current, false);
+            putBlock(current, FALSE);
 
             HDC hdc = GetDC(hWnd);
             
@@ -269,7 +264,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             }
             w++;
             
-            InvalidateRect(hWnd, NULL, false);
+            InvalidateRect(hWnd, NULL, FALSE);
             break;
         }
 
@@ -327,7 +322,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdS
     r.left = r.top = 0;
     r.right = 24 * 10;
     r.bottom = 24 * 20;
-    AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, false, 0);
+    AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, FALSE, 0);
 
     hMainWindow = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
         CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.top,
