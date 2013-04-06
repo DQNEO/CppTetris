@@ -64,7 +64,7 @@ BLOCK block[8] = {
 /* 関数プロトタイプ宣言 */
 int random(int);
 BOOL putBlock(STATUS, BOOL);
-BOOL deleteBlock(STATUS);
+BOOL boardDeleteCurrentBlock(STATUS);
 void showBoard();
 BOOL proccessInput();
 void gameOver();

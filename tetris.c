@@ -41,8 +41,8 @@ BOOL putBlock(STATUS s, BOOL action) {
     return TRUE;
 }
 
-/* カレントブロックを一度消す */
-BOOL deleteBlock(STATUS s) {
+/* 盤面からカレントブロックを一度消す */
+BOOL boardDeleteCurrentBlock(STATUS s) {
     int i,j;
     board[s.x][s.y] = 0;
 
@@ -85,7 +85,7 @@ void deleteLine() {
 /* カレントブロックの１マス自然落下 */
 void blockDown() {
     //現在位置のブロックを一度消して
-    deleteBlock(current);
+    boardDeleteCurrentBlock(current);
     //Y座標を１下げて
     current.y--;
 
@@ -153,7 +153,7 @@ BOOL processInput() {
     }
 
     if(n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
-        deleteBlock(current);
+        boardDeleteCurrentBlock(current);
         if(putBlock(n, FALSE)) {
             current = n;
         } else {
