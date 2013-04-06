@@ -83,7 +83,7 @@ void deleteCompleteLines() {
 }
 
 /* カレントブロックの１マス自然落下 */
-void blockFall() {
+void blockFall(HWND hWnd) {
     //現在位置のブロックを一度消して
     boardDeleteCurrentBlock(current);
     //Y座標を１下げて
@@ -110,7 +110,7 @@ void blockFall() {
     //画面トップに置いてみる。
     //置けなければゲームオーバー
     if(!putBlock(current, FALSE)) {
-        gameOver();
+        gameOver(hWnd);
     }
     
 }
@@ -122,9 +122,9 @@ void blockFall() {
  * ・全ブロックを赤く塗る
  * ・画面を再描画
  */
-void gameOver() {
+void gameOver(HWND hWnd) {
     int x,y;
-    KillTimer(hMainWindow, 100);
+    KillTimer(hWnd, 100);
     for(x = 1; x <= 10;x++) {
         for(y = 1; y <= 20; y++) {
             if(board[x][y] != 0) {
@@ -132,7 +132,7 @@ void gameOver() {
             }
         }
     }
-    InvalidateRect(hMainWindow, NULL, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
 }
 
 /* ユーザからのキー入力を取り扱う */
@@ -218,7 +218,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 }
             }
             if(w % 5 == 0) {
-                blockFall();
+                blockFall(hWnd);
             }
             w++;
             
@@ -283,20 +283,20 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdS
     r.bottom = 24 * 20;
     AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, FALSE, 0);
 
-    hMainWindow = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
+    HWND hWnd = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
         CW_USEDEFAULT, CW_USEDEFAULT, r.right - r.left, r.bottom - r.top,
         NULL, NULL, hInst, NULL);
     
-    ShowWindow(hMainWindow, SW_SHOW);
+    ShowWindow(hWnd, SW_SHOW);
 
-    SetTimer(hMainWindow, 100, 1000 /30, NULL);
+    SetTimer(hWnd, 100, 1000 /30, NULL);
     MSG msg;
     while(GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
     
-    KillTimer(hMainWindow, 100);
+    KillTimer(hWnd, 100);
 
     return 0;
 }

@@ -1,6 +1,5 @@
 /* Windows‚¨‚Ü‚¶‚È‚¢Œn‚ÌƒOƒ[ƒoƒ‹•Ï” */
 HINSTANCE hInstance;
-HWND hMainWindow;
 
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
@@ -67,7 +66,7 @@ BOOL putBlock(STATUS, BOOL);
 BOOL boardDeleteCurrentBlock(STATUS);
 void boardRender();
 BOOL proccessInput();
-void gameOver();
+void gameOver(HWND);
 void deleteCompleteLines();
-void blockFall();
+void blockFall(HWND);
 
