@@ -60,7 +60,7 @@ BOOL deleteBlock(STATUS s) {
     return TRUE;
 }
 
-/* ’i‚ª‚»‚ë‚Á‚½‚Éíœ‚·‚éˆ— */
+/* —‰º’¼Œã‚É’i‚ª‚»‚ë‚Á‚½‚Éíœ‚·‚éˆ— */
 void deleteLine() {
     int y,x,i,j;
     for(y = 1; y < 23; y++) {
