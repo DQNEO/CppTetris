@@ -1,11 +1,6 @@
 #include <windows.h>
 
-/**
- * 盤面(12x25)データ構造体
- * 0:黒
- * 1-7:ブロックのタイプ
- */
-int board[12][25];
+/* 構造体の宣言 */
 
 /**
  * 位置を表す構造体
@@ -34,6 +29,16 @@ typedef struct _TAG_STATUS {
     int rotate;
 } STATUS;
 
+/* グローバル変数の宣言 */
+
+/**
+ * 盤面(12x25)データ構造体
+ * 0:黒
+ * 1-7:ブロックのタイプ
+ */
+int board[12][25];
+
+/** 現在操作中のブロック */
 STATUS current;
 
 /**
@@ -58,6 +63,7 @@ HWND hMainWindow;
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
+/* 関数プロトタイプ宣言 */
 int random(int);
 BOOL putBlock(STATUS, BOOL);
 BOOL deleteBlock(STATUS);
