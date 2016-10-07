@@ -1,3 +1,11 @@
 Thumbs.db
 *.o
 a.exe
+*.sln
+*.sdf
+Debug/
+Release/
+*.vcxproj
+*.suo
+*.filters
+*.user
