@@ -52,14 +52,14 @@ bool putBlock(STATUS s, bool action = false) {
         board[s.x][s.y] = s.type;
     }
 
-
+	// È¸Àü °ü·Ã 
     for(int i = 0; i < 3; i++) {
         int dx = block[s.type].p[i].x;
         int dy = block[s.type].p[i].y;
         int r = s.rotate % block[s.type].rotate;
         for(int j = 0; j < r; j++) {
             int nx = dx, ny = dy;
-            dx = ny; dy = -nx;
+			dx = ny; dy = -nx;
         }
         if(board[s.x + dx][s.y + dy] != 0) {
             return false;
@@ -214,6 +214,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             break;
         }
         case WM_TIMER: {
+			//w is Timer
             static int w = 0;
             if(w % 2 == 0) {
                 if(processInput()) {
@@ -258,22 +259,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
     hInstance = hInst;
     WNDCLASSEX wc;
-    static LPCTSTR pClassName = "NicoNicoProgramming2";  // ƒNƒ‰ƒX–¼
+    static LPCTSTR pClassName = "NicoNicoProgramming2";  
 
-    wc.cbSize        = sizeof(WNDCLASSEX);               // \‘¢‘ÌƒTƒCƒY
-    wc.style         = CS_HREDRAW | CS_VREDRAW;          // ƒNƒ‰ƒXƒXƒ^ƒCƒ‹
+    wc.cbSize        = sizeof(WNDCLASSEX);              
+    wc.style         = CS_HREDRAW | CS_VREDRAW;          
     wc.lpfnWndProc   = (WNDPROC)WndProc;
-    wc.cbClsExtra    = 0;                                // •â‘«ƒƒ‚ƒŠƒuƒƒbƒN
-    wc.cbWndExtra    = 0;                                // @‚ÌƒTƒCƒY
-    wc.hInstance     = hInst;                            // ƒCƒ“ƒXƒ^ƒ“ƒX
-    wc.hIcon         = NULL;                             // ƒAƒCƒRƒ“
-    wc.hCursor       = LoadCursor(NULL,IDC_ARROW);       // ƒJ[ƒ\ƒ‹
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);         // ”wŒiF
-    wc.lpszMenuName  = NULL;                             // ƒƒjƒ…[
-    wc.lpszClassName = pClassName;                       // ƒNƒ‰ƒX–¼
-    wc.hIconSm       = NULL;                             // ¬‚³‚¢ƒAƒCƒRƒ“
+    wc.cbClsExtra    = 0;                                
+    wc.cbWndExtra    = 0;                                
+    wc.hInstance     = hInst;                            
+    wc.hIcon         = NULL;                             
+    wc.hCursor       = LoadCursor(NULL,IDC_ARROW);      
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);         
+    wc.lpszMenuName  = NULL;                             
+    wc.lpszClassName = pClassName;                      
+    wc.hIconSm       = NULL;                            
 
-    if (!RegisterClassEx(&wc)) return FALSE;             // “o˜^
+    if (!RegisterClassEx(&wc)) return FALSE;            
 
     RECT r;
     r.left = r.top = 0;
