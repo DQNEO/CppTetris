@@ -1,5 +1,5 @@
 #include <windows.h>
-
+//testing Line 
 HINSTANCE hInstance;
 HWND hMainWindow;
 
@@ -258,22 +258,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 int WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
     hInstance = hInst;
     WNDCLASSEX wc;
-    static LPCTSTR pClassName = "NicoNicoProgramming2";  // ÉNÉâÉXñº
+    static LPCTSTR pClassName = "NicoNicoProgramming2";  // „ÇØ„É©„ÇπÂêç
 
-    wc.cbSize        = sizeof(WNDCLASSEX);               // ç\ë¢ëÃÉTÉCÉY
-    wc.style         = CS_HREDRAW | CS_VREDRAW;          // ÉNÉâÉXÉXÉ^ÉCÉã
+    wc.cbSize        = sizeof(WNDCLASSEX);               // ÊßãÈÄ†‰Ωì„Çµ„Ç§„Ç∫
+    wc.style         = CS_HREDRAW | CS_VREDRAW;          // „ÇØ„É©„Çπ„Çπ„Çø„Ç§„É´
     wc.lpfnWndProc   = (WNDPROC)WndProc;
-    wc.cbClsExtra    = 0;                                // ï‚ë´ÉÅÉÇÉäÉuÉçÉbÉN
-    wc.cbWndExtra    = 0;                                // Å@ÇÃÉTÉCÉY
-    wc.hInstance     = hInst;                            // ÉCÉìÉXÉ^ÉìÉX
-    wc.hIcon         = NULL;                             // ÉAÉCÉRÉì
-    wc.hCursor       = LoadCursor(NULL,IDC_ARROW);       // ÉJÅ[É\Éã
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);         // îwåiêF
-    wc.lpszMenuName  = NULL;                             // ÉÅÉjÉÖÅ[
-    wc.lpszClassName = pClassName;                       // ÉNÉâÉXñº
-    wc.hIconSm       = NULL;                             // è¨Ç≥Ç¢ÉAÉCÉRÉì
+    wc.cbClsExtra    = 0;                                // Ë£úË∂≥„É°„É¢„É™„Éñ„É≠„ÉÉ„ÇØ
+    wc.cbWndExtra    = 0;                                // „ÄÄ„ÅÆ„Çµ„Ç§„Ç∫
+    wc.hInstance     = hInst;                            // „Ç§„É≥„Çπ„Çø„É≥„Çπ
+    wc.hIcon         = NULL;                             // „Ç¢„Ç§„Ç≥„É≥
+    wc.hCursor       = LoadCursor(NULL,IDC_ARROW);       // „Ç´„Éº„ÇΩ„É´
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);         // ËÉåÊôØËâ≤
+    wc.lpszMenuName  = NULL;                             // „É°„Éã„É•„Éº
+    wc.lpszClassName = pClassName;                       // „ÇØ„É©„ÇπÂêç
+    wc.hIconSm       = NULL;                             // Â∞è„Åï„ÅÑ„Ç¢„Ç§„Ç≥„É≥
 
-    if (!RegisterClassEx(&wc)) return FALSE;             // ìoò^
+    if (!RegisterClassEx(&wc)) return FALSE;             // ÁôªÈå≤
 
     RECT r;
     r.left = r.top = 0;
