@@ -1,11 +1,9 @@
 #pragma once
+#include <windows.h>
 
 class GameMaster
 {
 public:
-	GameMaster();
-	~GameMaster();
-
 	typedef struct _TAG_POSITION {
 		int x;
 		int y;
@@ -23,6 +21,15 @@ public:
 		int rotate;
 	} STATUS;
 
+private:
+	BLOCK block[8];
+	int board[12][25];
+	STATUS current;
+
+public:
+	GameMaster();
+	~GameMaster();
+
 	int random(int max);
 	bool putBlock(STATUS s, bool action = false);
 	bool deleteBlock(STATUS s);
@@ -31,5 +38,6 @@ public:
 	void gameOver();
 	void deleteLine();
 	void blockDown();
+
 };
 
