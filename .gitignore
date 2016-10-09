@@ -9,4 +9,7 @@ Release/
 *.suo
 *.filters
 *.user
+<<<<<<< HEAD
 *.aps
+=======
+>>>>>>> origin/master
