@@ -199,43 +199,47 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
             HDC hdc = GetDC(hWnd);
             
+			//BackGround
             hMemDC = CreateCompatibleDC(hdc);
             HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 24 * 10, 24 * 20);
             hMemPrev = (HBITMAP)SelectObject(hMemDC, hBitmap);
             
+			//
             hBlockDC = CreateCompatibleDC(hdc);
             hBitmap = LoadBitmap(hInstance, "BLOCKS");
             hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
             
-            // debug
-            BitBlt(hMemDC, 0, 0, 24, 24, hBlockDC, 0, 0, SRCCOPY);
             
             ReleaseDC(hWnd, hdc);
             break;
         }
         case WM_TIMER: {
+			
 			//w is Timer
             static int w = 0;
-            if(w % 2 == 0) {
-                if(processInput()) {
-                    w = 0;
-                }
-            }
-            if(w % 5 == 0) {
+         
+            if(w % 8 == 0) {
                 blockDown();
             }
             w++;
             
             InvalidateRect(hWnd, NULL, false);
             break;
+			
         }
 
         case WM_PAINT: {
-            showBoard();
+			
+            //showBoard();
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+
+			BitBlt(hMemDC, 0, 0, 24, 24, hBlockDC, 0, 36, SRCCOPY);
             BitBlt(hdc, 0, 0, 24 * 10, 24 * 20, hMemDC, 0, 0, SRCCOPY);
+			//BitBlt(hdc, 0, 0, 24, 24, hBlockDC, 0, 0, SRCCOPY);
+
             EndPaint(hWnd, &ps);
+			
             break;
         }
         case WM_DESTROY: {
