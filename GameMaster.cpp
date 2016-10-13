@@ -11,6 +11,7 @@ GameMaster::GameMaster()
 	block[5] = { 2, { { 0, -1 },	{ -1,0 }	, { -1, 1 } }}; // key2
 	block[6] = { 1, { { 0,  1 },	{ 1, 0 }	, { 1, 1 } } }; // square
 	block[7] = { 4, { { 0, -1 },	{ 1, 0 }	, { -1, 0 } }}; // T	
+
 }
 
 
@@ -72,12 +73,14 @@ bool GameMaster::deleteBlock(STATUS s) {
 
 
 
-void GameMaster::showBoard() {
+HDC GameMaster::showBoard() {
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
 			BitBlt(hMemDC, (x - 1) * 24, (20 - y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
 		}
 	}
+
+	return hMemDC;
 }
 
 
@@ -113,7 +116,8 @@ bool GameMaster::processInput() {
 
 
 void GameMaster::gameOver() {
-	KillTimer(hMainWindow, 100);
+	bUpdateStop = true;
+
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
 			if (board[x][y] != 0) {
@@ -121,7 +125,7 @@ void GameMaster::gameOver() {
 			}
 		}
 	}
-	InvalidateRect(hMainWindow, NULL, false);
+	//InvalidateRect(hMainWindow, NULL, false);
 }
 
 void GameMaster::deleteLine() {
@@ -161,4 +165,63 @@ void GameMaster::blockDown() {
 			gameOver();
 		}
 	}
+}
+
+void GameMaster::initialize(HDC hdc, HINSTANCE hInstance)
+{
+	for (int x = 0; x < 12; x++) {
+		for (int y = 0; y < 25; y++) {
+			if (x == 0 || x == 11 || y == 0) {
+				board[x][y] = 1;
+			}
+			else {
+				board[x][y] = 0;
+			}
+		}
+	}
+
+	current.x = 5;
+	current.y = 21;
+	current.type = random(7) + 1;
+	current.rotate = random(4);
+	putBlock(current);	
+
+	hMemDC = CreateCompatibleDC(hdc);
+	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 24 * 10, 24 * 20);
+	hMemPrev = (HBITMAP)SelectObject(hMemDC, hBitmap);
+
+	hBlockDC = CreateCompatibleDC(hdc);
+	hBitmap = LoadBitmap(hInstance, "BLOCKS");
+	hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
+
+	bUpdateStop = false;
+}
+
+void GameMaster::Update()
+{
+	if (bUpdateStop == false)
+	{
+		static int w = 0;
+		if (w % 3 == 0) {
+			processInput();
+		}
+
+		if (w % 8 == 0) {
+			blockDown();
+		}
+		w++;
+	}
+
+}
+
+void GameMaster::Destory()
+{
+	HBITMAP hBitmap = (HBITMAP)SelectObject(hMemDC, hMemPrev);
+	DeleteObject(hBitmap);
+	DeleteObject(hMemDC);
+
+	hBitmap = (HBITMAP)SelectObject(hBlockDC, hBlockPrev);
+	DeleteObject(hBitmap);
+	DeleteObject(hBlockDC);
+
 }
