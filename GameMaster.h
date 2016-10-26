@@ -26,14 +26,28 @@ private:
 	int board[12][25];
 	STATUS current;
 
+	//when game is over, this set true
+	bool bUpdateStop;
+
+	HDC hMemDC, hBlockDC;
+	HBITMAP hMemPrev, hBlockPrev;
+
+
 public:
 	GameMaster();
 	~GameMaster();
 
+	//added func
+	void initialize(HDC hdc,HINSTANCE hInstance);
+	void Update();
+	void Destory();
+
+
+	//Original
 	int random(int max);
 	bool putBlock(STATUS s, bool action = false);
 	bool deleteBlock(STATUS s);
-	void showBoard();
+	HDC showBoard();
 	bool processInput();
 	void gameOver();
 	void deleteLine();
