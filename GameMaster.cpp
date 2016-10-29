@@ -199,18 +199,19 @@ void GameMaster::initialize(HDC hdc, HINSTANCE hInstance)
 
 void GameMaster::Update()
 {
-	if (bUpdateStop == false)
-	{
-		static int w = 0;
-		if (w % 3 == 0) {
-			processInput();
-		}
+	if (bUpdateStop == true)
+		return;
 
-		if (w % 8 == 0) {
-			blockDown();
-		}
-		w++;
+	static int w = 0;
+	if (w % 3 == 0) {
+		processInput();
 	}
+
+	if (w % 5 == 0) {
+		blockDown();
+	}
+	w++;
+	
 
 }
 
