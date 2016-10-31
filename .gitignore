@@ -1,6 +1,7 @@
 Thumbs.db
 *.o
 a.exe
+<<<<<<< HEAD
 *.sln
 *.sdf
 Debug/
@@ -14,3 +15,5 @@ Release/
 =======
 >>>>>>> origin/master
 *.opensdf
+=======
+>>>>>>> parent of 6392de0... Setup
