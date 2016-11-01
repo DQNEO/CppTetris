@@ -282,11 +282,10 @@ void GameMaster::Update()
 		processInput();
 	}
 
-	if (w % 4 == 0) {
+	if (w % 5 == 0) {
 		blockDown();
 	}
 	w++;
-
 }
 
 void GameMaster::Destory()
