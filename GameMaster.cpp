@@ -38,8 +38,10 @@ bool GameMaster::putBlock(STATUS s, bool action) {
 		int dy = block[s.type].p[i].y;
 		int r = s.rotate % block[s.type].rotate;
 		for (int j = 0; j < r; j++) {
-			int nx = dx, ny = dy;
-			dx = ny; dy = -nx;
+			int nx = dx;
+			int	ny = dy;
+				dx = ny;
+				dy = -nx;
 		}
 		if (board[s.x + dx][s.y + dy] != 0) {
 			return false;
@@ -72,14 +74,84 @@ bool GameMaster::deleteBlock(STATUS s) {
 }
 
 
+bool GameMaster::CheckBlock(STATUS s)
+{
+	if (board[s.x][s.y] != 0) {
+		return false;
+	}
 
-HDC GameMaster::showBoard() {
+	// 회전 관련 
+	for (int i = 0; i < 3; i++) {
+		int dx = block[s.type].p[i].x;
+		int dy = block[s.type].p[i].y;
+		int r = s.rotate % block[s.type].rotate;
+		for (int j = 0; j < r; j++) {
+			int nx = dx;
+			int	ny = dy;
+			dx = ny;
+			dy = -nx;
+		}
+		if (board[s.x + dx][s.y + dy] != 0) {
+			return false;
+		}
+		
+	}
+	
+	return true;
+}
+
+void GameMaster::AhphaBlending() {
+	STATUS temp = current;
+
+	deleteBlock(current);
+	while (1){
+		temp.y--;
+		if (CheckBlock(temp))
+			continue;
+		else{
+			putBlock(current);
+			temp.y++;
+			break;
+		}
+	}
+
+	BLENDFUNCTION bf;
+	bf.BlendOp = AC_SRC_OVER;
+	bf.BlendFlags = 0;
+	bf.SourceConstantAlpha = 120;
+	bf.AlphaFormat = 0;
+
+	AlphaBlend(hMemDC, (temp.x - 1) * 24, (20 - temp.y) * 24, 24, 24, hBlockDC, 0, (current.type) * 24, 24, 24, bf);
+
+	for (int i = 0; i < 3; i++){
+		int dx = block[current.type].p[i].x;
+		int dy = block[current.type].p[i].y;
+
+		int r = current.rotate % block[current.type].rotate;
+		for (int j = 0; j < r; j++) {
+			int nx = dx;
+			int	ny = dy;
+			dx = ny;
+			dy = -nx;
+		}
+		AlphaBlend(hMemDC, (temp.x - 1 + dx) * 24, (20 - (temp.y + dy)) * 24, 24, 24, hBlockDC, 0, (current.type) * 24, 24, 24, bf);
+	}
+}
+
+
+HDC GameMaster::showBoard() {	
+
+
+	//맵을 그린다
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
 			BitBlt(hMemDC, (x - 1) * 24, (20 - y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
 		}
 	}
+	
+	AhphaBlending();
 
+	
 	return hMemDC;
 }
 
@@ -103,6 +175,8 @@ bool GameMaster::processInput() {
 
 	if (n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
 		deleteBlock(current);
+
+
 		if (putBlock(n)) {
 			current = n;
 		}
@@ -116,7 +190,7 @@ bool GameMaster::processInput() {
 
 
 void GameMaster::gameOver() {
-	bUpdateStop = true;
+	//bUpdateStop = true;
 
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
@@ -194,23 +268,24 @@ void GameMaster::initialize(HDC hdc, HINSTANCE hInstance)
 	hBitmap = LoadBitmap(hInstance, "BLOCKS");
 	hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
 
+
 	bUpdateStop = false;
 }
 
 void GameMaster::Update()
 {
-	if (bUpdateStop == false)
-	{
-		static int w = 0;
-		if (w % 3 == 0) {
-			processInput();
-		}
+	if (bUpdateStop == true)
+		return;
 
-		if (w % 8 == 0) {
-			blockDown();
-		}
-		w++;
+	static int w = 0;
+	if (w % 3 == 0) {
+		processInput();
 	}
+
+	if (w % 4 == 0) {
+		blockDown();
+	}
+	w++;
 
 }
 
@@ -223,5 +298,6 @@ void GameMaster::Destory()
 	hBitmap = (HBITMAP)SelectObject(hBlockDC, hBlockPrev);
 	DeleteObject(hBitmap);
 	DeleteObject(hBlockDC);
+
 
 }

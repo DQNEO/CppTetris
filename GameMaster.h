@@ -41,6 +41,8 @@ public:
 	void initialize(HDC hdc,HINSTANCE hInstance);
 	void Update();
 	void Destory();
+	bool CheckBlock(STATUS s);
+	void AhphaBlending();
 
 
 	//Original
