@@ -3,19 +3,19 @@
 HINSTANCE hInstance;
 HWND hMainWindow;
 
-GameMaster GM;
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 	case WM_CREATE: {
 		HDC hdc = GetDC(hWnd);
-		GM.initialize(hdc, hInstance);
+		initialize(hdc, hInstance);
 		ReleaseDC(hWnd, hdc);
 		break;
 	}
 
 	case WM_TIMER: {
-		GM.Update();
+		Update();
 		InvalidateRect(hWnd, NULL, false);
 		break;
 
@@ -23,7 +23,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	case WM_PAINT: {
 		HDC MemDC;
-		MemDC = GM.showBoard();
+		MemDC = showBoard();
 
 		PAINTSTRUCT ps;
 
@@ -35,7 +35,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 
 	case WM_DESTROY: {
-		GM.Destory();
+		Destory();
 		PostQuitMessage(0);
 		break;
 	}

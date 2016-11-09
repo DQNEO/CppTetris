@@ -1,36 +1,39 @@
 #include "GameMaster.h"
 
+const int KIND_OF_BLOCK = 8;
+const int MAP_WIDTH = 12;
+const int MAP_HEIGHT = 25;
 
-GameMaster::GameMaster()
-{
-	block[0] = { 1, { { 0,  0 },	{ 0, 0 }	, { 0, 0 } } }; //null
-	block[1] = { 2, { { 0, -1 },	{ 0, 1 }	, { 0, 2 } } }; // tetris
-	block[2] = { 4, { { 0, -1 },	{ 0, 1 }	, { 1, 1 } } }; //L1
-	block[3] = { 4, { { 0, -1 },	{ 0, 1 }	, { -1, 1 } }}; // L2
-	block[4] = { 2, { { 0, -1 },	{ 1, 0 }	, { 1, 1 } } }; // key1
-	block[5] = { 2, { { 0, -1 },	{ -1,0 }	, { -1, 1 } }}; // key2
-	block[6] = { 1, { { 0,  1 },	{ 1, 0 }	, { 1, 1 } } }; // square
-	block[7] = { 4, { { 0, -1 },	{ 1, 0 }	, { -1, 0 } }}; // T	
+/*Map*/
+int board[MAP_WIDTH][MAP_HEIGHT];
 
-}
+/*cuurent block status*/
+STATUS current;
+
+bool bUpdateStop;
+
+HDC hMemDC, hBlockDC;
+HBITMAP hMemPrev, hBlockPrev;
 
 
-GameMaster::~GameMaster()
-{
-}
+const BLOCK block[KIND_OF_BLOCK] = {
+	{ 1, { { 0, 0 } , { 0, 0 } , { 0, 0 }  } }, //null 
+	{ 2, { { 0, -1 }, { 0, 1 } , { 0, 2 }  } }, //tetris
+	{ 4, { { 0, -1 }, { 0, 1 } , { 1, 1 }  } }, //L1
+	{ 4, { { 0, -1 }, { 0, 1 } , { -1, 1 } } }, //L2
+	{ 2, { { 0, -1 }, { 1, 0 } , { 1, 1 }  } }, //KEY1
+	{ 2, { { 0, -1 }, { -1, 0 }, { -1, 1 } } }, //KEY2
+	{ 1, { { 0, 1 } , { 1, 0 } , { 1, 1 }  } }, //SQUARE
+	{ 4, { { 0, -1 }, { 1, 0 } , { -1, 0 } } }  //T
+};
 
-int GameMaster::random(int max) {
+int random(int max) {
 	return (int)(rand() / (RAND_MAX + 1.0) * max);
 }
 
-bool GameMaster::putBlock(STATUS s, bool action) {
-	if (board[s.x][s.y] != 0) {
-		return false;
-	}
-
-	if (action) {
-		board[s.x][s.y] = s.type;
-	}
+void Setblocks(STATUS& s, int type)
+{
+	board[s.x][s.y] = type;
 
 	// 회전 관련 
 	for (int i = 0; i < 3; i++) {
@@ -40,41 +43,32 @@ bool GameMaster::putBlock(STATUS s, bool action) {
 		for (int j = 0; j < r; j++) {
 			int nx = dx;
 			int	ny = dy;
-				dx = ny;
-				dy = -nx;
+			dx = ny;
+			dy = -nx;
 		}
-		if (board[s.x + dx][s.y + dy] != 0) {
-			return false;
-		}
-		if (action) {
-			board[s.x + dx][s.y + dy] = s.type;
-		}
+		board[s.x + dx][s.y + dy] = type;
 	}
-	if (!action) {
-		putBlock(s, true);
-	}
+}
+
+bool putBlock(STATUS s, bool action) {
+	
+	if (CheckBlock(s) == false)
+		return false;
+	
+	Setblocks(s, s.type);
+	
 	return true;
 }
 
-bool GameMaster::deleteBlock(STATUS s) {
-	board[s.x][s.y] = 0;
+bool deleteBlock(STATUS s) {
 
-	for (int i = 0; i < 3; i++) {
-		int dx = block[s.type].p[i].x;
-		int dy = block[s.type].p[i].y;
-		int r = s.rotate % block[s.type].rotate;
-		for (int j = 0; j < r; j++) {
-			int nx = dx, ny = dy;
-			dx = ny; dy = -nx;
-		}
-		board[s.x + dx][s.y + dy] = 0;
-	}
+	Setblocks(s, 0);
 
 	return true;
 }
 
 
-bool GameMaster::CheckBlock(STATUS s)
+bool CheckBlock(STATUS s)
 {
 	if (board[s.x][s.y] != 0) {
 		return false;
@@ -100,7 +94,7 @@ bool GameMaster::CheckBlock(STATUS s)
 	return true;
 }
 
-void GameMaster::AhphaBlending() {
+void AhphaBlending() {
 	STATUS temp = current;
 
 	deleteBlock(current);
@@ -139,7 +133,7 @@ void GameMaster::AhphaBlending() {
 }
 
 
-HDC GameMaster::showBoard() {	
+HDC showBoard() {	
 
 
 	//맵을 그린다
@@ -156,7 +150,7 @@ HDC GameMaster::showBoard() {
 }
 
 
-bool GameMaster::processInput() {
+bool processInput() {
 	bool ret = false;
 	STATUS n = current;
 	if (GetAsyncKeyState(VK_LEFT)) {
@@ -189,7 +183,7 @@ bool GameMaster::processInput() {
 }
 
 
-void GameMaster::gameOver() {
+void gameOver() {
 	//bUpdateStop = true;
 
 	for (int x = 1; x <= 10; x++) {
@@ -202,7 +196,7 @@ void GameMaster::gameOver() {
 	//InvalidateRect(hMainWindow, NULL, false);
 }
 
-void GameMaster::deleteLine() {
+void deleteLine() {
 	for (int y = 1; y < 23; y++) {
 		bool flag = true;
 		for (int x = 1; x <= 10; x++) {
@@ -222,7 +216,7 @@ void GameMaster::deleteLine() {
 	}
 }
 
-void GameMaster::blockDown() {
+void blockDown() {
 	deleteBlock(current);
 	current.y--;
 	if (!putBlock(current)) {
@@ -241,7 +235,7 @@ void GameMaster::blockDown() {
 	}
 }
 
-void GameMaster::initialize(HDC hdc, HINSTANCE hInstance)
+void initialize(HDC hdc, HINSTANCE hInstance)
 {
 	for (int x = 0; x < 12; x++) {
 		for (int y = 0; y < 25; y++) {
@@ -272,7 +266,7 @@ void GameMaster::initialize(HDC hdc, HINSTANCE hInstance)
 	bUpdateStop = false;
 }
 
-void GameMaster::Update()
+void Update()
 {
 	if (bUpdateStop == true)
 		return;
@@ -288,7 +282,7 @@ void GameMaster::Update()
 	w++;
 }
 
-void GameMaster::Destory()
+void Destory()
 {
 	HBITMAP hBitmap = (HBITMAP)SelectObject(hMemDC, hMemPrev);
 	DeleteObject(hBitmap);
