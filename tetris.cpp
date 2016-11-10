@@ -2,20 +2,46 @@
 
 HINSTANCE hInstance;
 HWND hMainWindow;
-
+#pragma warning(disable: 4996)
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	
+	static int aaa = 0;
 	switch (msg) {
 	case WM_CREATE: {
 		HDC hdc = GetDC(hWnd);
 		initialize(hdc, hInstance);
 		ReleaseDC(hWnd, hdc);
+		if (DEBUG_MODE == true){
+			AllocConsole();
+			freopen("CONOUT$", "wt", stdout);
+			printf("Hello, World! in Win32 API Application...\n");
+		}
+
+		break;     
+	}
+
+	case WM_KEYDOWN:{
+		bool keyDownResult;
+		keyDownResult = processInput(wParam);
+
+		//완전내리기, 또는 즉시 내리기 일때
+		if (keyDownResult){
+			blockDown();
+			aaa = 0;
+		}
+
 		break;
 	}
 
 	case WM_TIMER: {
-		Update();
+		aaa++;
+		if (aaa % 8 == 7)
+		{
+			Update();
+			aaa = 0;
+		}
 		InvalidateRect(hWnd, NULL, false);
 		break;
 
@@ -36,6 +62,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	case WM_DESTROY: {
 		Destory();
+		
+		if (DEBUG_MODE == true)
+			FreeConsole();
+
 		PostQuitMessage(0);
 		break;
 	}

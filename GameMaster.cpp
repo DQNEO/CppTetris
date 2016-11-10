@@ -11,20 +11,21 @@ int board[MAP_WIDTH][MAP_HEIGHT];
 STATUS current;
 
 bool bUpdateStop;
+bool isSpacebarUp;
 
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
 
 const BLOCK block[KIND_OF_BLOCK] = {
-	{ 1, { { 0, 0 } , { 0, 0 } , { 0, 0 }  } }, //null 
-	{ 2, { { 0, -1 }, { 0, 1 } , { 0, 2 }  } }, //tetris
-	{ 4, { { 0, -1 }, { 0, 1 } , { 1, 1 }  } }, //L1
-	{ 4, { { 0, -1 }, { 0, 1 } , { -1, 1 } } }, //L2
-	{ 2, { { 0, -1 }, { 1, 0 } , { 1, 1 }  } }, //KEY1
+	{ 1, { { 0, 0 }, { 0, 0 }, { 0, 0 } } }, //null 
+	{ 2, { { 0, -1 }, { 0, 1 }, { 0, 2 } } }, //tetris
+	{ 4, { { 0, -1 }, { 0, 1 }, { 1, 1 } } }, //L1
+	{ 4, { { 0, -1 }, { 0, 1 }, { -1, 1 } } }, //L2
+	{ 2, { { 0, -1 }, { 1, 0 }, { 1, 1 } } }, //KEY1
 	{ 2, { { 0, -1 }, { -1, 0 }, { -1, 1 } } }, //KEY2
-	{ 1, { { 0, 1 } , { 1, 0 } , { 1, 1 }  } }, //SQUARE
-	{ 4, { { 0, -1 }, { 1, 0 } , { -1, 0 } } }  //T
+	{ 1, { { 0, 1 }, { 1, 0 }, { 1, 1 } } }, //SQUARE
+	{ 4, { { 0, -1 }, { 1, 0 }, { -1, 0 } } }  //T
 };
 
 int random(int max) {
@@ -51,12 +52,12 @@ void Setblocks(STATUS& s, int type)
 }
 
 bool putBlock(STATUS s, bool action) {
-	
+
 	if (CheckBlock(s) == false)
 		return false;
-	
+
 	Setblocks(s, s.type);
-	
+
 	return true;
 }
 
@@ -88,26 +89,18 @@ bool CheckBlock(STATUS s)
 		if (board[s.x + dx][s.y + dy] != 0) {
 			return false;
 		}
-		
+
 	}
-	
+
 	return true;
 }
 
 void AhphaBlending() {
 	STATUS temp = current;
 
-	deleteBlock(current);
-	while (1){
-		temp.y--;
-		if (CheckBlock(temp))
-			continue;
-		else{
-			putBlock(current);
-			temp.y++;
-			break;
-		}
-	}
+	deleteBlock(temp);
+	temp = makeDropResultBlock(temp);
+	putBlock(current);
 
 	BLENDFUNCTION bf;
 	bf.BlendOp = AC_SRC_OVER;
@@ -133,7 +126,7 @@ void AhphaBlending() {
 }
 
 
-HDC showBoard() {	
+HDC showBoard() {
 
 
 	//¸ÊÀ» ±×¸°´Ù
@@ -142,34 +135,57 @@ HDC showBoard() {
 			BitBlt(hMemDC, (x - 1) * 24, (20 - y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
 		}
 	}
-	
+
 	AhphaBlending();
 
-	
+
 	return hMemDC;
 }
 
+STATUS makeDropResultBlock(STATUS s){
+	while (1){
+		s.y--;
+		if (CheckBlock(s))
+			continue;
+		else{			
+			s.y++;
+			break;
+		}
+	}
 
-bool processInput() {
+	return s;
+}
+
+
+bool processInput(WPARAM keyValue) {
+	if (bUpdateStop == true)
+		return false;
+
 	bool ret = false;
 	STATUS n = current;
-	if (GetAsyncKeyState(VK_LEFT)) {
+
+	switch (keyValue){
+	case VK_LEFT:
 		n.x--;
-	}
-	else if (GetAsyncKeyState(VK_RIGHT)) {
+		break;
+	case VK_RIGHT:
 		n.x++;
-	}
-	else if (GetAsyncKeyState(VK_UP)) {
+		break;
+	case VK_UP:
 		n.rotate++;
-	}
-	else if (GetAsyncKeyState(VK_DOWN)) {
+		break;
+	case VK_DOWN:
 		n.y--;
+		break;
+	case VK_SPACE:
+		deleteBlock(n);
+		n = makeDropResultBlock(n);
 		ret = true;
+		break;
 	}
 
 	if (n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
 		deleteBlock(current);
-
 
 		if (putBlock(n)) {
 			current = n;
@@ -184,7 +200,7 @@ bool processInput() {
 
 
 void gameOver() {
-	//bUpdateStop = true;
+	bUpdateStop = true;
 
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
@@ -252,7 +268,7 @@ void initialize(HDC hdc, HINSTANCE hInstance)
 	current.y = 21;
 	current.type = random(7) + 1;
 	current.rotate = random(4);
-	putBlock(current);	
+	putBlock(current);
 
 	hMemDC = CreateCompatibleDC(hdc);
 	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 24 * 10, 24 * 20);
@@ -262,7 +278,7 @@ void initialize(HDC hdc, HINSTANCE hInstance)
 	hBitmap = LoadBitmap(hInstance, "BLOCKS");
 	hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
 
-
+	isSpacebarUp = true;
 	bUpdateStop = false;
 }
 
@@ -272,11 +288,10 @@ void Update()
 		return;
 
 	static int w = 0;
-	if (w % 3 == 0) {
-		processInput();
-	}
 
-	if (w % 5 == 0) {
+
+	//if (w % 5 == 0) 
+	{
 		blockDown();
 	}
 	w++;

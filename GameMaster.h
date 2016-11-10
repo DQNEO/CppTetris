@@ -1,7 +1,13 @@
+﻿
+
 #ifndef _GAMEMASTER_H_
 #define _GAMEMASTER_H_
 
+const bool DEBUG_MODE = false;
 #include <windows.h>
+#include <stdio.h>
+
+
 
 
 typedef struct _TAG_POSITION {
@@ -27,18 +33,23 @@ void initialize(HDC hdc,HINSTANCE hInstance);
 void Update();
 void Destory();
 bool CheckBlock(STATUS s);
-void AhphaBlending();
+void AhphaBlending();;
 void Setblocks(STATUS& s, int type);
+STATUS makeDropResultBlock(STATUS s); // 임시 
+
 
 //Original
 int random(int max);
 bool putBlock(STATUS s, bool action = false);
 bool deleteBlock(STATUS s);
 HDC showBoard();
-bool processInput();
+bool processInput(WPARAM keyValue);
 void gameOver();
 void deleteLine();
 void blockDown();
 
 
 #endif /* GAMEMASTER_H */
+
+
+
