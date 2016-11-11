@@ -4,15 +4,22 @@ HINSTANCE hInstance;
 HWND hMainWindow;
 #pragma warning(disable: 4996)
 
+/*********************
+이건 임시 전역 변수에요
+전역 변수 없애야 해요 
+static 써야 하나요 
+**********************/
+
+bool keyboardUpFalg = true;
+int FrameCount = 0;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-	
-	static int aaa = 0;
 	switch (msg) {
 	case WM_CREATE: {
 		HDC hdc = GetDC(hWnd);
 		initialize(hdc, hInstance);
 		ReleaseDC(hWnd, hdc);
+
 		if (DEBUG_MODE == true){
 			AllocConsole();
 			freopen("CONOUT$", "wt", stdout);
@@ -21,26 +28,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		break;     
 	}
+	case WM_KEYUP:
+		switch (wParam){
+		case VK_UP:
+		case VK_SPACE:
+			keyboardUpFalg = true;
+		}
+		break;
 
 	case WM_KEYDOWN:{
-		bool keyDownResult;
-		keyDownResult = processInput(wParam);
-
-		//완전내리기, 또는 즉시 내리기 일때
-		if (keyDownResult){
-			blockDown();
-			aaa = 0;
+		switch (wParam){
+		case VK_UP:
+		case VK_SPACE:
+			if (keyboardUpFalg == false)
+				break;
+			keyboardUpFalg = false;
+		case VK_LEFT:
+		case VK_RIGHT:
+		case VK_DOWN:
+			bool keyDownResult;
+			keyDownResult = processInput(wParam);
+			if (keyDownResult){
+				blockDown();
+				FrameCount = 0;
+			}
+			break;
 		}
-
 		break;
 	}
 
 	case WM_TIMER: {
-		aaa++;
-		if (aaa % 8 == 7)
+		FrameCount++;
+		if (FrameCount % 8 == 7)
 		{
 			Update();
-			aaa = 0;
+			FrameCount = 0;
 		}
 		InvalidateRect(hWnd, NULL, false);
 		break;

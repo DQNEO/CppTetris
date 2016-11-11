@@ -4,6 +4,7 @@
 #define _GAMEMASTER_H_
 
 const bool DEBUG_MODE = false;
+
 #include <windows.h>
 #include <stdio.h>
 
