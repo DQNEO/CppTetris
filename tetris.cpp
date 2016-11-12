@@ -11,15 +11,19 @@ static 써야 하나요
 **********************/
 
 bool keyboardUpFalg = true;
-int FrameCount = 0;
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	
+	//프레임을
+	static int FrameCount = 0;
+	
 	switch (msg) {
 	case WM_CREATE: {
 		HDC hdc = GetDC(hWnd);
 		initialize(hdc, hInstance);
 		ReleaseDC(hWnd, hdc);
-
+		
 		if (DEBUG_MODE == true){
 			AllocConsole();
 			freopen("CONOUT$", "wt", stdout);

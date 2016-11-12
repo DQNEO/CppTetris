@@ -11,7 +11,6 @@ int board[MAP_WIDTH][MAP_HEIGHT];
 STATUS current;
 
 bool bUpdateStop;
-bool isSpacebarUp;
 
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
@@ -278,7 +277,6 @@ void initialize(HDC hdc, HINSTANCE hInstance)
 	hBitmap = LoadBitmap(hInstance, "BLOCKS");
 	hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
 
-	isSpacebarUp = true;
 	bUpdateStop = false;
 }
 
@@ -287,14 +285,7 @@ void Update()
 	if (bUpdateStop == true)
 		return;
 
-	static int w = 0;
-
-
-	//if (w % 5 == 0) 
-	{
-		blockDown();
-	}
-	w++;
+	blockDown();
 }
 
 void Destory()

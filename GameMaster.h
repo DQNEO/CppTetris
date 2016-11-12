@@ -1,15 +1,10 @@
-﻿
-
-#ifndef _GAMEMASTER_H_
+﻿#ifndef _GAMEMASTER_H_
 #define _GAMEMASTER_H_
 
 const bool DEBUG_MODE = false;
 
 #include <windows.h>
 #include <stdio.h>
-
-
-
 
 typedef struct _TAG_POSITION {
 	int x;
