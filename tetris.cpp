@@ -53,7 +53,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			bool keyDownResult;
 			keyDownResult = processInput(wParam);
 			if (keyDownResult){
-				blockDown();
+				Update();
 				FrameCount = 0;
 			}
 			break;
@@ -62,7 +62,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 
 	case WM_TIMER: {
-		FrameCount++;
+ 		FrameCount++;
 		if (FrameCount % 8 == 7)
 		{
 			Update();

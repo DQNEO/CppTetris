@@ -97,6 +97,9 @@ bool CheckBlock(STATUS s)
 void AhphaBlending() {
 	STATUS temp = current;
 
+	if (temp.type == NULL)
+		return;
+
 	deleteBlock(temp);
 	temp = makeDropResultBlock(temp);
 	putBlock(current);
@@ -127,6 +130,7 @@ void AhphaBlending() {
 
 HDC showBoard() {
 
+	
 
 	//¸ÊÀ» ±×¸°´Ù
 	for (int x = 1; x <= 10; x++) {
@@ -135,8 +139,8 @@ HDC showBoard() {
 		}
 	}
 
-	AhphaBlending();
 
+	AhphaBlending();
 
 	return hMemDC;
 }
@@ -178,7 +182,7 @@ bool processInput(WPARAM keyValue) {
 		break;
 	case VK_SPACE:
 		deleteBlock(n);
-		n = makeDropResultBlock(n);
+ 		n = makeDropResultBlock(n);
 		ret = true;
 		break;
 	}
@@ -201,14 +205,20 @@ bool processInput(WPARAM keyValue) {
 void gameOver() {
 	bUpdateStop = true;
 
+	current.type = NULL;
+	Setblocks(current, 0);
+
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
 			if (board[x][y] != 0) {
 				board[x][y] = 1;
 			}
 		}
-	}
-	//InvalidateRect(hMainWindow, NULL, false);
+ 	}
+
+	bUpdateStop = true;
+	
+	return;	
 }
 
 void deleteLine() {
@@ -244,7 +254,7 @@ void blockDown() {
 		current.y = 21;
 		current.type = random(7) + 1;
 		current.rotate = random(4);
-		if (!putBlock(current)) {
+		if (!putBlock(current)) {			
 			gameOver();
 		}
 	}
