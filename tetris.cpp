@@ -310,7 +310,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 									}
 							}
 							InvalidateRect(hMainWindow, NULL, TRUE);
-							current.type = random(7);
+							current.type = random(7)+1;
 							current.rotate = random(4);
 							current.x = 5;
 							current.y = 21;
@@ -360,7 +360,7 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 	wc.hInstance     = hInst;                         
 	wc.hIcon         = NULL;                         
 	wc.hCursor       = LoadCursor(NULL,IDC_ARROW);    
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW-1);   //+1은 흰색, +3는 검정색 ... 반복
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+2);
 	wc.lpszMenuName  = NULL;                
 	wc.lpszClassName = pClassName;                    
 	wc.hIconSm       = NULL;                            
