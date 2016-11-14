@@ -4,20 +4,17 @@ HINSTANCE hInstance;
 HWND hMainWindow;
 #pragma warning(disable: 4996)
 
-/*********************
+/**********************
 이건 임시 전역 변수에요
 전역 변수 없애야 해요 
 static 써야 하나요 
-**********************/
-
-bool keyboardUpFalg = true;
-
+*********************/
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	
-	//프레임을
 	static int FrameCount = 0;
-	
+	static bool keyboardUpFalg = true;
+
 	switch (msg) {
 	case WM_CREATE: {
 		HDC hdc = GetDC(hWnd);
