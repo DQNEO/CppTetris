@@ -8,7 +8,7 @@ HBITMAP hMemPrev, hBlockPrev;
 
 char imsistr[128];// 문자열 출력을 위한 임시 버퍼
 int board[12][25];
-int score=0,combo=0,c_check=0,total=0; //c_check=콤보인지 확인, total=콤보누적횟수
+int score=0,combo=0,c_check=0,total=0,line=0; //c_check=콤보인지 확인, total=콤보누적횟수
 
 typedef struct _TAG_POSITION {
 	int x;
@@ -96,24 +96,38 @@ bool deleteBlock(STATUS s) {
 //점수
 void printScore()
 {
-	wsprintf(imsistr,"점수 : %d",score);
-	TextOut(hdc,260,180,imsistr,strlen(imsistr));
+	Rectangle(hdc,251,150,335,220);
+	wsprintf(imsistr,"SCORE");
+	TextOut(hdc,270,160,imsistr,strlen(imsistr));
+	wsprintf(imsistr,"%d",score);
+	TextOut(hdc,275,190,imsistr,strlen(imsistr));
 }
 
 //콤보
-void printCombo(){
-
-    wsprintf(imsistr,"콤보 : %d",combo);
-	TextOut(hdc,260,200,imsistr,strlen(imsistr));
-	
-
+void printCombo()
+{
+	Rectangle(hdc,251,230,335,300);
+    wsprintf(imsistr,"COMBO");
+	TextOut(hdc,270,240,imsistr,strlen(imsistr));
+	wsprintf(imsistr,"%d",combo);
+	TextOut(hdc,275,270,imsistr,strlen(imsistr));
  }
 
+//라인
+void printLine()
+{
+	Rectangle(hdc,251,310,335,380);
+    wsprintf(imsistr,"LINE");
+	TextOut(hdc,270,320,imsistr,strlen(imsistr));
+	wsprintf(imsistr,"%d",line);
+	TextOut(hdc,275,350,imsistr,strlen(imsistr));
+ }
 void showBoard() {
 
 	hdc=GetDC(hMainWindow);
 	printScore();
 	printCombo();
+	printLine();
 
 	for(int x = 1; x <= 10; x++) {
 		for(int y = 1; y <= 20; y++) {
@@ -172,6 +186,7 @@ void deleteLine() {
 
 		if(flag) {
 
+			line++;
 			c_check++;
 			score+=10;
 
@@ -311,9 +326,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						KillTimer(hMainWindow, 100);
 						if(MessageBox(hWnd, "게임을 재시작 하시겠습니까?", "재시작", MB_YESNO)==IDYES)
 						{
+							score=0;
+							combo=0;
+							c_check=0;
+							total=0;
+							line=0;
 							createMap();
 							SetTimer(hMainWindow, 100, 1000/30, NULL);
-							
+		
 							break;
 						}
 						else
