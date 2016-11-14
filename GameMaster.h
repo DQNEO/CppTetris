@@ -1,4 +1,6 @@
-﻿#ifndef _GAMEMASTER_H_
+﻿
+
+#ifndef _GAMEMASTER_H_
 #define _GAMEMASTER_H_
 
 const bool DEBUG_MODE = false;
@@ -24,14 +26,16 @@ typedef struct _TAG_STATUS {
 } STATUS;
 
 
+
 //added func
-void initialize(HDC hdc,HINSTANCE hInstance);
+void initialize();
 void Update();
 void Destory();
 bool CheckBlock(STATUS s);
 void AhphaBlending();;
 void Setblocks(STATUS& s, int type);
 STATUS makeDropResultBlock(STATUS s); // 임시 
+void MakeDCformBitmaps(HDC hdc, HINSTANCE hInstance);
 
 
 //Original

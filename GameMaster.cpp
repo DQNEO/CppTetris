@@ -15,6 +15,7 @@ bool bUpdateStop;
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
+int score = 0, combo = 0, c_check = 0;
 
 const BLOCK block[KIND_OF_BLOCK] = {
 	{ 1, { { 0, 0 }, { 0, 0 }, { 0, 0 } } }, //null 
@@ -130,7 +131,6 @@ void AhphaBlending() {
 
 HDC showBoard() {
 
-	
 
 	//맵을 그린다
 	for (int x = 1; x <= 10; x++) {
@@ -231,6 +231,9 @@ void deleteLine() {
 		}
 
 		if (flag) {
+			c_check++;
+			score += 10;
+
 			for (int j = y; j < 23; j++) {
 				for (int i = 1; i <= 10; i++) {
 					board[i][j] = board[i][j + 1];
@@ -239,6 +242,14 @@ void deleteLine() {
 			y--;
 		}
 	}
+	
+	if (c_check>1)
+	{
+		combo = c_check;
+		score += c_check * 100;//보너스 점수
+	}
+	c_check = 0;
+	
 }
 
 void blockDown() {
@@ -260,7 +271,7 @@ void blockDown() {
 	}
 }
 
-void initialize(HDC hdc, HINSTANCE hInstance)
+void initialize()
 {
 	for (int x = 0; x < 12; x++) {
 		for (int y = 0; y < 25; y++) {
@@ -279,6 +290,10 @@ void initialize(HDC hdc, HINSTANCE hInstance)
 	current.rotate = random(4);
 	putBlock(current);
 
+	bUpdateStop = false;
+}
+
+void MakeDCformBitmaps(HDC hdc, HINSTANCE hInstance){
 	hMemDC = CreateCompatibleDC(hdc);
 	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 24 * 10, 24 * 20);
 	hMemPrev = (HBITMAP)SelectObject(hMemDC, hBitmap);
@@ -287,7 +302,6 @@ void initialize(HDC hdc, HINSTANCE hInstance)
 	hBitmap = LoadBitmap(hInstance, "BLOCKS");
 	hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
 
-	bUpdateStop = false;
 }
 
 void Update()
@@ -307,6 +321,4 @@ void Destory()
 	hBitmap = (HBITMAP)SelectObject(hBlockDC, hBlockPrev);
 	DeleteObject(hBitmap);
 	DeleteObject(hBlockDC);
-
-
 }
