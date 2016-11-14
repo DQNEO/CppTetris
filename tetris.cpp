@@ -177,10 +177,9 @@ void blockDown() {
 	}
 }
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-	switch(msg) {
-	case WM_CREATE: {
-		for(int x = 0; x < 12; x++) {
+void createMap()
+{
+	for(int x = 0; x < 12; x++) {
 			for(int y = 0; y < 25; y++) {
 				if(x == 0 || x == 11 || y == 0) {
 					board[x][y] = 1;
@@ -194,6 +193,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		current.y = 21;
 		current.type = random(7) + 1;
 		current.rotate = random(4);
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch(msg) {
+	case WM_CREATE: {
+		createMap();
 		putBlock(current);
 
 		HDC hdc = GetDC(hWnd);
@@ -260,20 +265,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 						KillTimer(hMainWindow, 100);
 						if(MessageBox(hWnd, "게임을 재시작 하시겠습니까?", "재시작", MB_YESNO)==IDYES)
 						{
-							KillTimer(hMainWindow, 100);
-							for(int x = 0; x < 12; x++) {
-								for(int y = 0; y < 25; y++)
-									if(x == 0 || x == 11 || y == 0) {
-										board[x][y] = 1;
-									} else {
-										board[x][y] = 0;
-									}
-							}
-							InvalidateRect(hMainWindow, NULL, TRUE);
-							current.type = random(7)+1;
-							current.rotate = random(4);
-							current.x = 5;
-							current.y = 21;
+							createMap();
 							SetTimer(hMainWindow, 100, 1000/30, NULL);
 							
 							break;
@@ -320,7 +312,7 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 	wc.hInstance     = hInst;                         
 	wc.hIcon         = NULL;                         
 	wc.hCursor       = LoadCursor(NULL,IDC_ARROW);    
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+2);
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	wc.lpszMenuName  = NULL;                
 	wc.lpszClassName = pClassName;                    
 	wc.hIconSm       = NULL;                            
