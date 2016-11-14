@@ -3,10 +3,14 @@
 HINSTANCE hInstance;
 HWND hMainWindow;
 
-HDC hMemDC, hBlockDC;
+HDC hMemDC, hBlockDC, hdc;
 HBITMAP hMemPrev, hBlockPrev;
 
+
+char imsistr[128];// 문자열 출력을 위한 임시 버퍼
 int board[12][25];
+int score=0,combo=0,c_check=0;
+
 
 typedef struct _TAG_POSITION {
 	int x;
@@ -74,6 +78,24 @@ bool putBlock(STATUS s, bool action = false) {
 	return true;
 }
 
+
+//점수
+void printscore()
+{
+	wsprintf(imsistr,"점수 : %d",score);
+	TextOut(hdc,260,180,imsistr,strlen(imsistr));
+}
+
+void ComboPrint(){
+
+    wsprintf(imsistr,"콤보 : %d",combo);
+	TextOut(hdc,260,200,imsistr,strlen(imsistr));
+	
+
+ }
+
+
+
 bool deleteBlock(STATUS s) {
 	board[s.x][s.y] = 0;
 
@@ -92,6 +114,12 @@ bool deleteBlock(STATUS s) {
 }
 
 void showBoard() {
+
+	hdc=GetDC(hMainWindow);
+
+	printscore();
+	ComboPrint();
+
 	for(int x = 1; x <= 10; x++) {
 		for(int y = 1; y <= 20; y++) {
 			BitBlt(hMemDC, (x - 1) * 24, (20 -y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
@@ -148,6 +176,10 @@ void deleteLine() {
 		}
 
 		if(flag) {
+
+			c_check++;
+			score+=10;
+
 			for(int j = y; j < 23; j++) {
 				for(int i = 1; i <= 10; i++) {
 					board[i][j] = board[i][j + 1];
@@ -156,7 +188,15 @@ void deleteLine() {
 			y--;
 		}
 	}
+
+	if(c_check>1)
+	{
+		combo=c_check;	
+		score+=c_check*100;//보너스 점수
+	}
+	c_check=0;
 }
+
 
 void blockDown() {
 	deleteBlock(current);
@@ -329,7 +369,7 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 
 	RECT r;
 	r.left = r.top = 0;
-	r.right = 24 * 10;
+	r.right = 24 * 17;
 	r.bottom = 24 * 20;
 	AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, false, 0);
 
