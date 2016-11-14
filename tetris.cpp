@@ -3,10 +3,12 @@
 HINSTANCE hInstance;
 HWND hMainWindow;
 
-HDC hMemDC, hBlockDC;
+HDC hMemDC, hBlockDC, hdc;
 HBITMAP hMemPrev, hBlockPrev;
 
+char imsistr[128];// 문자열 출력을 위한 임시 버퍼
 int board[12][25];
+int score=0,combo=0,c_check=0,total=0; //c_check=콤보인지 확인, total=콤보누적횟수
 
 typedef struct _TAG_POSITION {
 	int x;
@@ -91,7 +93,28 @@ bool deleteBlock(STATUS s) {
 	return true;
 }
 
+//점수
+void printScore()
+{
+	wsprintf(imsistr,"점수 : %d",score);
+	TextOut(hdc,260,180,imsistr,strlen(imsistr));
+}
+
+//콤보
+void printCombo(){
+
+    wsprintf(imsistr,"콤보 : %d",combo);
+	TextOut(hdc,260,200,imsistr,strlen(imsistr));
+	
+
+ }
+
 void showBoard() {
+
+	hdc=GetDC(hMainWindow);
+	printScore();
+	printCombo();
+
 	for(int x = 1; x <= 10; x++) {
 		for(int y = 1; y <= 20; y++) {
 			BitBlt(hMemDC, (x - 1) * 24, (20 -y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
@@ -148,6 +171,10 @@ void deleteLine() {
 		}
 
 		if(flag) {
+
+			c_check++;
+			score+=10;
+
 			for(int j = y; j < 23; j++) {
 				for(int i = 1; i <= 10; i++) {
 					board[i][j] = board[i][j + 1];
@@ -155,6 +182,25 @@ void deleteLine() {
 			}
 			y--;
 		}
+	}
+
+	if(c_check>1) // combo인지 확인
+	{
+		combo=c_check;	
+		total+=c_check; // 콤보를 누적함
+		score+=c_check*100; // 콤보시 보너스 점수
+	}
+
+	if(c_check==1) // 한 줄만 지워진 경우 combo=0
+	{
+		combo=0;
+	}
+	c_check=0;
+
+	if(total>10) // 누적 콤보 보너스 점수
+	{
+		score+=200;
+		total-=10;
 	}
 }
 
@@ -330,7 +376,7 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 		NULL, NULL, hInst, NULL); //window창 사이즈의 크기를 바꿔 일시정지 버튼과 점수판을 작성하도록 한다.
 	HWND hMainWindow_button;
 	HWND hMainWindow_button1;
-	hMainWindow_button = CreateWindow(TEXT("button"), TEXT("▶"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+	hMainWindow_button = CreateWindow(TEXT("button"), TEXT("▶|"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		24 * 10 + 30, 10, 50, 50, hMainWindow, (HMENU)10000, hInstance, NULL);
 	hMainWindow_button1 = CreateWindow(TEXT("button"), TEXT("Restart"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		24 * 10 + 20, 70, 70, 50, hMainWindow, (HMENU)10001, hInstance, NULL);
