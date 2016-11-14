@@ -253,7 +253,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				case 10000:
 					{
 						KillTimer(hMainWindow, 100);
-						if(MessageBox(hWnd, "게임을 계속 하시겠습니까?", "일시 정지", MB_YESNO)==IDYES)
+						if(MessageBox(hWnd, "게임을 계속 하시겠습니까?", "일시 정지", MB_OK))
 							SetTimer(hMainWindow, 100, 1000/30, NULL);
 						else
 							gameOver();
