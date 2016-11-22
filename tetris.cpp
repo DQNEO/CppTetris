@@ -96,31 +96,31 @@ bool deleteBlock(STATUS s) {
 //점수
 void printScore()
 {
-	Rectangle(hdc,251,150,335,220);
+	Rectangle(hdc,251,200,335,260);
 	wsprintf(imsistr,"SCORE");
-	TextOut(hdc,270,160,imsistr,strlen(imsistr));
+	TextOut(hdc,270,210,imsistr,strlen(imsistr));
 	wsprintf(imsistr,"%d",score);
-	TextOut(hdc,275,190,imsistr,strlen(imsistr));
+	TextOut(hdc,275,235,imsistr,strlen(imsistr));
 }
 
 //콤보
 void printCombo()
 {
-	Rectangle(hdc,251,230,335,300);
+	Rectangle(hdc,251,270,335,330);
     wsprintf(imsistr,"COMBO");
-	TextOut(hdc,270,240,imsistr,strlen(imsistr));
+	TextOut(hdc,270,280,imsistr,strlen(imsistr));
 	wsprintf(imsistr,"%d",combo);
-	TextOut(hdc,275,270,imsistr,strlen(imsistr));
+	TextOut(hdc,275,305,imsistr,strlen(imsistr));
  }
 
 //라인
 void printLine()
 {
-	Rectangle(hdc,251,310,335,380);
+	Rectangle(hdc,251,340,335,400);
     wsprintf(imsistr,"LINE");
-	TextOut(hdc,270,320,imsistr,strlen(imsistr));
+	TextOut(hdc,270,350,imsistr,strlen(imsistr));
 	wsprintf(imsistr,"%d",line);
-	TextOut(hdc,275,350,imsistr,strlen(imsistr));
+	TextOut(hdc,275,375,imsistr,strlen(imsistr));
  }
 void showBoard() {
 
@@ -257,6 +257,8 @@ void createMap()
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+
+	
 	switch(msg) {
 	case WM_CREATE: {
 		createMap();
@@ -272,7 +274,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		hBitmap = LoadBitmap(hInstance, "BLOCKS");
 		hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
 
-		// debug
+
+		
+			// debug
 		BitBlt(hMemDC, 0, 0, 24, 24, hBlockDC, 0, 0, SRCCOPY);
 
 		ReleaseDC(hWnd, hdc);
@@ -340,6 +344,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 							SetTimer(hMainWindow, 100, 1000/30, NULL);
 						break;
 					}
+
+					//AI ON
+				case 1 :
+					{
+						
+					}
+
+					//AI OFF
+				case 0 :
+					{
+					
+					}
 				default:
 					break;
 				}
@@ -378,7 +394,7 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 	wc.hInstance     = hInst;                         
 	wc.hIcon         = NULL;                         
 	wc.hCursor       = LoadCursor(NULL,IDC_ARROW);    
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+0);
 	wc.lpszMenuName  = NULL;                
 	wc.lpszClassName = pClassName;                    
 	wc.hIconSm       = NULL;                            
@@ -396,10 +412,22 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 		NULL, NULL, hInst, NULL); //window창 사이즈의 크기를 바꿔 일시정지 버튼과 점수판을 작성하도록 한다.
 	HWND hMainWindow_button;
 	HWND hMainWindow_button1;
+	HWND hMainWindow_check_box;
+	HWND hMainWindow_r1;
+	HWND hMainWindow_r2;
+	
 	hMainWindow_button = CreateWindow(TEXT("button"), TEXT("▶|"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		24 * 10 + 30, 10, 50, 50, hMainWindow, (HMENU)10000, hInstance, NULL);
 	hMainWindow_button1 = CreateWindow(TEXT("button"), TEXT("Restart"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		24 * 10 + 20, 70, 70, 50, hMainWindow, (HMENU)10001, hInstance, NULL);
+	
+	//AI check_box
+	hMainWindow_check_box = CreateWindow(TEXT("button"), TEXT("AI"), WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+		24 * 10 + 15, 130, 80, 60, hMainWindow, (HMENU)0, hInstance, NULL);
+	hMainWindow_r1 = CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		24 * 10 + 25, 145, 50, 20, hMainWindow, (HMENU)1, hInstance, NULL);
+	hMainWindow_r2 = CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		24 * 10 + 25, 165, 50, 20, hMainWindow, (HMENU)0, hInstance, NULL);
 
 	ShowWindow(hMainWindow, SW_SHOW);
 	SetTimer(hMainWindow, 100, 1000 /30, NULL);
