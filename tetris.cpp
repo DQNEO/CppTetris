@@ -26,6 +26,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			freopen("CONOUT$", "wt", stdout);
 			printf("Hello, World! in Win32 API Application...\n");
 		}
+		//PostMessage(hWnd,)
+
 		break;
 	}		
 

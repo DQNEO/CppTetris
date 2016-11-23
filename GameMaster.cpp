@@ -7,6 +7,7 @@ const int MAP_HEIGHT = 25;
 /*Map*/
 int board[MAP_WIDTH][MAP_HEIGHT];
 
+
 /*cuurent block status*/
 STATUS current;
 
@@ -193,6 +194,40 @@ bool processInput(WPARAM keyValue) {
 		if (putBlock(n)) {
 			current = n;
 		}
+		else if (n.x < 2 || n.x > 8){
+			switch (n.x){
+			case 0:
+				n.x++;
+				if (putBlock(n)){
+					current = n;
+					break;
+				}
+			case 1:
+				n.x++;
+				if (putBlock(n)){
+					current = n;
+					break;
+				}
+				break;
+			case 10:
+				n.x--;
+				if (putBlock(n)){
+					current = n;
+					break;
+				}
+			case 9:
+				n.x--;
+				if (putBlock(n)){
+					current = n;
+					break;
+				}
+				break;
+			default:
+				putBlock(current);
+				break;
+			}
+		}
+
 		else {
 			putBlock(current);
 		}
