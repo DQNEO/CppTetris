@@ -16,7 +16,7 @@ bool bUpdateStop;
 HDC hMemDC, hBlockDC;
 HBITMAP hMemPrev, hBlockPrev;
 
-int score = 0, combo = 0, c_check = 0;
+int score = 0, combo = 0, c_check = 0, total = 0, line =0;
 
 const BLOCK block[KIND_OF_BLOCK] = {
 	{ 1, { { 0, 0 }, { 0, 0 }, { 0, 0 } } }, //null 
@@ -131,15 +131,12 @@ void AhphaBlending() {
 
 
 HDC showBoard() {
-
-
 	//맵을 그린다
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
 			BitBlt(hMemDC, (x - 1) * 24, (20 - y) * 24, 24, 24, hBlockDC, 0, board[x][y] * 24, SRCCOPY);
 		}
 	}
-
 
 	AhphaBlending();
 
@@ -188,46 +185,13 @@ bool processInput(WPARAM keyValue) {
 		break;
 	}
 
-	if (n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
+ 	if (n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
 		deleteBlock(current);
 
 		if (putBlock(n)) {
 			current = n;
 		}
-		else if (n.x < 2 || n.x > 8){
-			switch (n.x){
-			case 0:
-				n.x++;
-				if (putBlock(n)){
-					current = n;
-					break;
-				}
-			case 1:
-				n.x++;
-				if (putBlock(n)){
-					current = n;
-					break;
-				}
-				break;
-			case 10:
-				n.x--;
-				if (putBlock(n)){
-					current = n;
-					break;
-				}
-			case 9:
-				n.x--;
-				if (putBlock(n)){
-					current = n;
-					break;
-				}
-				break;
-			default:
-				putBlock(current);
-				break;
-			}
-		}
-
+	
 		else {
 			putBlock(current);
 		}
@@ -241,7 +205,7 @@ void gameOver() {
 	bUpdateStop = true;
 
 	current.type = NULL;
-	Setblocks(current, 0);
+	//Setblocks(current, 0);
 
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
@@ -250,8 +214,6 @@ void gameOver() {
 			}
 		}
  	}
-
-	bUpdateStop = true;
 	
 	return;	
 }
@@ -268,6 +230,7 @@ void deleteLine() {
 		if (flag) {
 			c_check++;
 			score += 10;
+			line ++;
 
 			for (int j = y; j < 23; j++) {
 				for (int i = 1; i <= 10; i++) {
@@ -278,12 +241,24 @@ void deleteLine() {
 		}
 	}
 	
-	if (c_check>1)
+	if (c_check>1) // combo인지 확인
 	{
 		combo = c_check;
-		score += c_check * 100;//보너스 점수
+		total += c_check; // 콤보를 누적함
+		score += c_check * 100; // 콤보시 보너스 점수
+	}
+
+	if (c_check == 1) // 한 줄만 지워진 경우 combo=0
+	{
+		combo = 0;
 	}
 	c_check = 0;
+
+	if (total>10) // 누적 콤보 보너스 점수
+	{
+		score += 200;
+		total -= 10;
+	}
 	
 }
 

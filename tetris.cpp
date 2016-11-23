@@ -3,19 +3,44 @@
 HINSTANCE hInstance;
 #pragma warning(disable: 4996)
 
-extern int score;
-extern int combo;
+extern int score, combo;
+extern int total, line, c_check;
 
-void printscore(HDC hwnd);
-void ComboPrint(HDC hwnd);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+
+void printInfo(HDC& hdc, RECT r, char* string,int val, POINT p1,POINT p2){
+	Rectangle(hdc, r.left, r.top, r.right, r.bottom);
+	
+	char imsistr[128];
+	wsprintf(imsistr, string);
+	TextOut(hdc, p1.x, p1.y, imsistr, strlen(imsistr));
+	wsprintf(imsistr, "%d", val);
+	TextOut(hdc, p2.x, p2.y, imsistr, strlen(imsistr));
+}
+
+RECT makeRECT(int a, int b, int c, int d){
+	RECT temp;
+	temp.left = a;
+	temp.top = b;
+	temp.right = c;
+	temp.bottom = d;
+	return temp;
+}
+
+POINT makePOINT(int a, int b){
+	POINT temp;
+	temp.x = a;
+	temp.y = b;
+	return temp;
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-
 	static int FrameCount = 0;
 	static bool keyboardUpFalg = true;
 
 	switch (msg) {
-	case WM_CREATE:{
+	case WM_CREATE: {
 		HDC hdc = GetDC(hWnd);
 		initialize();
 		MakeDCformBitmaps(hdc, hInstance);
@@ -24,13 +49,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		if (DEBUG_MODE == true){
 			AllocConsole();
 			freopen("CONOUT$", "wt", stdout);
-			printf("Hello, World! in Win32 API Application...\n");
 		}
 		//PostMessage(hWnd,)
-
 		break;
-	}		
-
+	}
 	case WM_KEYUP:{
 		switch (wParam){
 		case VK_UP:
@@ -70,25 +92,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		InvalidateRect(hWnd, NULL, false);
 		break;
 	}
-
 	case WM_PAINT:{
 		HDC MemDC;
 		MemDC = showBoard();
-
-
-
 		PAINTSTRUCT ps;
-
 		HDC hdc = BeginPaint(hWnd, &ps);
 
-		printscore(hdc);
-		ComboPrint(hdc);
+		printInfo(hdc, makeRECT(251, 200, 335, 260), "SCORE", score, makePOINT(270, 210), makePOINT(275, 235));
+		printInfo(hdc, makeRECT(251, 270, 335, 330), "COMBO", combo, makePOINT(270, 280), makePOINT(275, 305));
+		printInfo(hdc, makeRECT(251, 340, 335, 400), "LINE", line, makePOINT(270, 350), makePOINT(275, 375));
 
+		//ComboPrint(hdc);
 		BitBlt(hdc, 0, 0, 24 * 10, 24 * 20, MemDC, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &ps);
-
 		break;
 	}
+
 	case WM_COMMAND:
 		if (((HWND)lParam) && (HIWORD(wParam) == BN_CLICKED))
 		{
@@ -98,8 +117,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				KillTimer(hWnd, 100);
 				if (MessageBox(hWnd, "게임을 계속 하시겠습니까?", "일시 정지", MB_YESNO) == IDYES)
 					SetTimer(hWnd, 100, 1000 / 30, NULL);
-				else
+				else{
 					gameOver();
+					InvalidateRect(hWnd, NULL, TRUE);
+				}
 				break;
 
 			case 10001:
@@ -108,6 +129,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					initialize();
 				}
 				SetTimer(hWnd, 100, 1000 / 30, NULL);
+				break;
+				//AI ON
+			case 1:
+				break;
+				//AI OFF
+			case 0:
 				break;
 			}
 		}
@@ -124,22 +151,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
-
-
-void printscore(HDC hwnd)
-{
-	char imsistr[128];
-	wsprintf(imsistr, "점수 : %d", score);
-	TextOut(hwnd, 260, 180, imsistr, strlen(imsistr));
-}
-
-void ComboPrint(HDC hwnd)
-{
-	char imsistr[128];
-	wsprintf(imsistr,"콤보 : %d",combo);
-	TextOut(hwnd, 260, 200, imsistr, strlen(imsistr));
 }
 
 
@@ -162,24 +173,31 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 	wc.lpszClassName = pClassName;
 	wc.hIconSm = NULL;
 
-	if (!RegisterClassEx(&wc)) return FALSE;
+	if (!RegisterClassEx(&wc))
+		return FALSE;
 
 	RECT r;
 	r.left = r.top = 0;
-	r.right = 24 * 17;
+	r.right = 24 * 10;
 	r.bottom = 24 * 20;
 	AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, false, 0);
 
 	HWND hMainWindow = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
-		CW_USEDEFAULT, CW_USEDEFAULT, 350, r.bottom - r.top, NULL, NULL, hInst, NULL);
+		CW_USEDEFAULT, CW_USEDEFAULT, 360, r.bottom - r.top, NULL, NULL, hInst, NULL);
 
-	HWND hMainWindow_button;
-	hMainWindow_button = CreateWindow(TEXT("button"), TEXT("▶"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+
+	CreateWindow(TEXT("button"), TEXT("▶|"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		24 * 10 + 30, 10, 50, 50, hMainWindow, (HMENU)10000, hInstance, NULL);
-
-	HWND hMainWindow_button1;
-	hMainWindow_button1 = CreateWindow(TEXT("button"), TEXT("Restart"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+	CreateWindow(TEXT("button"), TEXT("Restart"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		24 * 10 + 20, 70, 70, 50, hMainWindow, (HMENU)10001, hInstance, NULL);
+
+	//AI check_box
+	CreateWindow(TEXT("button"), TEXT("AI"), WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+		24 * 10 + 15, 130, 80, 60, hMainWindow, (HMENU)0, hInstance, NULL);
+	CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		24 * 10 + 25, 145, 50, 20, hMainWindow, (HMENU)1, hInstance, NULL);
+	CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		24 * 10 + 25, 165, 50, 20, hMainWindow, (HMENU)0, hInstance, NULL);
 
 	ShowWindow(hMainWindow, SW_SHOW);
 	SetTimer(hMainWindow, 100, 1000 / 30, NULL);
