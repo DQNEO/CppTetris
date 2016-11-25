@@ -3,13 +3,13 @@
 HINSTANCE hInstance;
 #pragma warning(disable: 4996)
 
-extern int score, combo;
-extern int total, line, c_check;
+extern INFO info;
+extern STATUS current;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
-void printInfo(HDC& hdc, RECT r, char* string,int val, POINT p1,POINT p2){
+void printInfo(HDC& hdc, RECT r, char* string, int val, POINT p1,POINT p2){
 	Rectangle(hdc, r.left, r.top, r.right, r.bottom);
 	
 	char imsistr[128];
@@ -37,16 +37,20 @@ POINT makePOINT(int a, int b){
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	static int FrameCount = 0;
-	static bool keyboardUpFalg = true;
+	static int keyboardUpFalg = TRUE;
+	static int isAImode = FALSE;
+
+	/*Map*/
+	static int board[MAP_WIDTH][MAP_HEIGHT];
 
 	switch (msg) {
 	case WM_CREATE: {
 		HDC hdc = GetDC(hWnd);
-		initialize();
+		initialize(board);
 		MakeDCformBitmaps(hdc, hInstance);
 		ReleaseDC(hWnd, hdc);
 
-		if (DEBUG_MODE == true){
+		if (DEBUG_MODE == TRUE){
 			AllocConsole();
 			freopen("CONOUT$", "wt", stdout);
 		}
@@ -57,7 +61,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		switch (wParam){
 		case VK_UP:
 		case VK_SPACE:
-			keyboardUpFalg = true;
+			keyboardUpFalg = TRUE;
 		}
 		break;
 	}
@@ -66,16 +70,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		switch (wParam){
 		case VK_UP:
 		case VK_SPACE:
-			if (keyboardUpFalg == false)
+			if (keyboardUpFalg == FALSE)
 				break;
-			keyboardUpFalg = false;
+			keyboardUpFalg = FALSE;
 		case VK_LEFT:
 		case VK_RIGHT:
 		case VK_DOWN:
-			bool keyDownResult;
-			keyDownResult = processInput(wParam);
+			int keyDownResult;
+			keyDownResult = processInput(wParam,board);
 			if (keyDownResult){
-				Update();
+				Update(board);
 				FrameCount = 0;
 			}
 			break;
@@ -84,23 +88,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 
 	case WM_TIMER:{
+		if (isAImode) { 
+			deleteBlock(current, board);
+			current = getBlock(current, board);
+		}
+
 		FrameCount++;
 		if (FrameCount % 8 == 7){
-			Update();
+			Update(board);
 			FrameCount = 0;
 		}
-		InvalidateRect(hWnd, NULL, false);
+		InvalidateRect(hWnd, NULL, FALSE);
 		break;
 	}
 	case WM_PAINT:{
 		HDC MemDC;
-		MemDC = showBoard();
+		MemDC = showBoard(board);
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 
-		printInfo(hdc, makeRECT(251, 200, 335, 260), "SCORE", score, makePOINT(270, 210), makePOINT(275, 235));
-		printInfo(hdc, makeRECT(251, 270, 335, 330), "COMBO", combo, makePOINT(270, 280), makePOINT(275, 305));
-		printInfo(hdc, makeRECT(251, 340, 335, 400), "LINE", line, makePOINT(270, 350), makePOINT(275, 375));
+		printInfo(hdc, makeRECT(251, 200, 335, 260), "SCORE", info.score, makePOINT(270, 210), makePOINT(275, 235));
+		printInfo(hdc, makeRECT(251, 270, 335, 330), "COMBO", info.combo, makePOINT(270, 280), makePOINT(275, 305));
+		printInfo(hdc, makeRECT(251, 340, 335, 400), "LINE", info.line, makePOINT(270, 350), makePOINT(275, 375));
 
 		//ComboPrint(hdc);
 		BitBlt(hdc, 0, 0, 24 * 10, 24 * 20, MemDC, 0, 0, SRCCOPY);
@@ -118,7 +127,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				if (MessageBox(hWnd, "게임을 계속 하시겠습니까?", "일시 정지", MB_YESNO) == IDYES)
 					SetTimer(hWnd, 100, 1000 / 30, NULL);
 				else{
-					gameOver();
+					gameOver(board);
 					InvalidateRect(hWnd, NULL, TRUE);
 				}
 				break;
@@ -126,15 +135,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			case 10001:
 				KillTimer(hWnd, 100);
 				if (MessageBox(hWnd, "게임을 재시작 하시겠습니까?", "재시작", MB_YESNO) == IDYES){
-					initialize();
+					initialize(board);
 				}
 				SetTimer(hWnd, 100, 1000 / 30, NULL);
 				break;
-				//AI ON
 			case 1:
+				SetFocus(hWnd);
+				isAImode = TRUE; //AI mode on
 				break;
-				//AI OFF
 			case 0:
+				SetFocus(hWnd);
+				isAImode = FALSE; //AI mode off
 				break;
 			}
 		}
@@ -143,7 +154,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	case WM_DESTROY:
 		Destory();
 
-		if (DEBUG_MODE == true)
+		if (DEBUG_MODE == TRUE)
 			FreeConsole();
 
 		PostQuitMessage(0);
@@ -155,6 +166,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 
 int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int cmdShow) {
+	srand(time(NULL));
 	hInstance = hInst;
 	WNDCLASSEX wc;
 
@@ -180,7 +192,7 @@ int __stdcall WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR cmdLine, int c
 	r.left = r.top = 0;
 	r.right = 24 * 10;
 	r.bottom = 24 * 20;
-	AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, false, 0);
+	AdjustWindowRectEx(&r, WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION, FALSE, 0);
 
 	HWND hMainWindow = CreateWindow(pClassName, "Nico Nico Programming2", WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
 		CW_USEDEFAULT, CW_USEDEFAULT, 360, r.bottom - r.top, NULL, NULL, hInst, NULL);
