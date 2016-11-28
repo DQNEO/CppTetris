@@ -21,7 +21,7 @@ int random(int max) {
 	return (int)(rand() / (RAND_MAX + 1.0) * max);
 }
 
-void Setblocks(STATUS& s, int type, int(*board)[MAP_HEIGHT])
+void Setblocks(STATUS s, int type, int(*board)[MAP_HEIGHT])
 {
 	board[s.x][s.y] = type;
 
@@ -420,7 +420,7 @@ double getABCH(int(*temp)[MAP_HEIGHT]) {
 	int A = 0;
 	int B = 0;
 	int C = 0;
-	int H = 0;
+	int H = INT_MAX;
 
 	for (int x = 1; x < MAP_WIDTH - 1; x++) {
 		int height = 0;
