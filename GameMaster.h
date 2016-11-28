@@ -40,6 +40,7 @@ typedef struct _INFO {
 	int total;
 	int line;
 	int bUpdateStop;
+	long Framecounter;
 }INFO;
 
 

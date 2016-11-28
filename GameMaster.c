@@ -291,6 +291,7 @@ void initialize(int(*board)[MAP_HEIGHT])
 	info.bUpdateStop = FALSE;
 
 	info.combo = info.c_check = info.line = info.score = info.total = 0;
+	info.Framecounter = 0;
 }
 
 void MakeDCformBitmaps(HDC hdc, HINSTANCE hInstance) {

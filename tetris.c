@@ -97,7 +97,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		}
 
 		FrameCount++;
-		if (FrameCount % 8 == 7){
+		info.Framecounter++;
+		//오버플로우 방지 
+		if (info.Framecounter > 100000000)
+			info.Framecounter = 100000000;
+
+		//0~5까지 
+		int level = info.Framecounter > 5 ? info.Framecounter / 150 : 5;		
+		//10에서 5까지
+		level = 10 - level;
+
+		if (FrameCount % level == level-1){
 			Update(board);
 			FrameCount = 0;
 			AIflag = FALSE;
