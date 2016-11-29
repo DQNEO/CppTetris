@@ -1,3 +1,20 @@
+/******************************************************************************
+* Project Name      : CppTetris
+* File Name         : GameMaster.c
+* Version           : 1.0
+* Compiler          : Visual Studio 2015
+*
+********************************************************************************
+* Copyright (2016), tkihira.
+********************************************************************************
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR
+* A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+* COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+* IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*******************************************************************************/
+
 #include "GameMaster.h"
 
 HDC hMemDC, hBlockDC;
@@ -6,26 +23,19 @@ HBITMAP hMemPrev, hBlockPrev;
 INFO info; //user information
 STATUS current; //cuurent block status
 
-const BLOCK block[KIND_OF_BLOCK] = {
-	{ 1, { { 0, 0 }, { 0, 0 }, { 0, 0 } } }, //null 
-	{ 2, { { 0, -1 }, { 0, 1 }, { 0, 2 } } }, //tetris
-	{ 4, { { 0, -1 }, { 0, 1 }, { 1, 1 } } }, //L1
-	{ 4, { { 0, -1 }, { 0, 1 }, { -1, 1 } } }, //L2
-	{ 2, { { 0, -1 }, { 1, 0 }, { 1, 1 } } }, //KEY1
-	{ 2, { { 0, -1 }, { -1, 0 }, { -1, 1 } } }, //KEY2
-	{ 1, { { 0, 1 }, { 1, 0 }, { 1, 1 } } }, //SQUARE
-	{ 4, { { 0, -1 }, { 1, 0 }, { -1, 0 } } }  //T
-};
-
-int random(int max) {
-	return (int)(rand() / (RAND_MAX + 1.0) * max);
-}
-
+/**
+* Set values at board as s form
+*
+* @param current block 
+* @param value 
+* @param board
+*
+*/
 void Setblocks(STATUS s, int type, int(*board)[MAP_HEIGHT])
 {
 	board[s.x][s.y] = type;
 
-	// 회전 관련 
+	//loop other 3 piece
 	for (int i = 0; i < 3; i++) {
 		int dx = block[s.type].p[i].x;
 		int dy = block[s.type].p[i].y;
@@ -40,6 +50,14 @@ void Setblocks(STATUS s, int type, int(*board)[MAP_HEIGHT])
 	}
 }
 
+/**
+* Put blocks to board
+*
+* @param block
+* @param board
+*
+* @return success or failure of putblock 
+*/
 int putBlock(STATUS s, int(*board)[MAP_HEIGHT]) {
 
 	if (CheckBlock(s, board) == FALSE)
@@ -50,6 +68,13 @@ int putBlock(STATUS s, int(*board)[MAP_HEIGHT]) {
 	return TRUE;
 }
 
+/**
+* delete blocks at board
+*
+* @param block
+* @param board
+*
+*/
 int deleteBlock(STATUS s, int(*board)[MAP_HEIGHT]) {
 
 	Setblocks(s, 0, board);
@@ -57,7 +82,14 @@ int deleteBlock(STATUS s, int(*board)[MAP_HEIGHT]) {
 	return TRUE;
 }
 
-
+/**
+* check the block can put at board
+*
+* @param new block
+* @param board
+*
+* @return success or failure of checkblock
+*/
 int CheckBlock(STATUS s, int(*board)[MAP_HEIGHT])
 {
 	if (board[s.x][s.y] != 0) {
@@ -84,13 +116,23 @@ int CheckBlock(STATUS s, int(*board)[MAP_HEIGHT])
 	return TRUE;
 }
 
+/**
+* preview dropdown block
+* 1. make dropResultblock
+* 2. alphablend dropResultblock;
+*
+* @param board
+*
+* @return success or failure of checkblock
+*/
 void AhphaBlending(int(*board)[MAP_HEIGHT]) {
 	STATUS temp = current;
 
-	if (temp.type == NULL)
+	if (temp.type == 0)
 		return;
 
 	deleteBlock(temp, board);
+	//즉시 내린 블록 생성 
 	temp = makeDropResultBlock(temp, board);
 	putBlock(current, board);
 
@@ -100,8 +142,10 @@ void AhphaBlending(int(*board)[MAP_HEIGHT]) {
 	bf.SourceConstantAlpha = 120;
 	bf.AlphaFormat = 0;
 
+	//코어 블록 만 그리고 
 	AlphaBlend(hMemDC, (temp.x - 1) * 24, (20 - temp.y) * 24, 24, 24, hBlockDC, 0, (current.type) * 24, 24, 24, bf);
 
+	//나머지 3개 블록 그린다.
 	for (int i = 0; i < 3; i++) {
 		int dx = block[current.type].p[i].x;
 		int dy = block[current.type].p[i].y;
@@ -117,7 +161,11 @@ void AhphaBlending(int(*board)[MAP_HEIGHT]) {
 	}
 }
 
-
+/**
+* show Map
+*
+* @param board
+*/
 HDC showBoard(int(*board)[MAP_HEIGHT]) {
 	//맵을 그린다
 	for (int x = 1; x <= 10; x++) {
@@ -131,6 +179,14 @@ HDC showBoard(int(*board)[MAP_HEIGHT]) {
 	return hMemDC;
 }
 
+/**
+* makeDropResult 
+*
+* @param block
+* @param board
+*
+* @return DropResult block
+*/
 STATUS makeDropResultBlock(STATUS s, int(*board)[MAP_HEIGHT]) {
 	while (1) {
 		s.y--;
@@ -146,6 +202,14 @@ STATUS makeDropResultBlock(STATUS s, int(*board)[MAP_HEIGHT]) {
 }
 
 
+/**
+* when current block is changed as input /current block and put it 
+*
+* @param keyValue
+* @param board
+*
+* @return isSpacebar down
+*/
 int processInput(WPARAM keyValue, int(*board)[MAP_HEIGHT]) {
 	if (info.bUpdateStop == TRUE)
 		return FALSE;
@@ -173,6 +237,7 @@ int processInput(WPARAM keyValue, int(*board)[MAP_HEIGHT]) {
 		break;
 	}
 
+	//when current block is changed
 	if (n.x != current.x || n.y != current.y || n.rotate != current.rotate) {
 		deleteBlock(current, board);
 
@@ -189,12 +254,20 @@ int processInput(WPARAM keyValue, int(*board)[MAP_HEIGHT]) {
 }
 
 
+/**
+* Gameover after work
+*
+* @param board
+*
+* @return isSpacebar down
+*/
 void gameOver(int(*board)[MAP_HEIGHT]) {
 	info.bUpdateStop = TRUE;
 
-	current.type = NULL;
+	current.type = 0;
 	//Setblocks(current, 0);
 
+	//block set red
 	for (int x = 1; x <= 10; x++) {
 		for (int y = 1; y <= 20; y++) {
 			if (board[x][y] != 0) {
@@ -206,6 +279,14 @@ void gameOver(int(*board)[MAP_HEIGHT]) {
 	return;
 }
 
+/**
+* check Horizen line is full block
+* claer line
+* Update Socre
+*
+* @param board
+*
+*/
 void deleteLine(int(*board)[MAP_HEIGHT]) {
 	for (int y = 1; y < 23; y++) {
 		int flag = TRUE;
@@ -250,6 +331,15 @@ void deleteLine(int(*board)[MAP_HEIGHT]) {
 
 }
 
+
+/**
+* current block down;
+* when current block conflict at ground, fix that and make new block
+* if makeNewblock is failure  the Game is Over  
+*
+* @param board
+*
+*/
 void blockDown(int(*board)[MAP_HEIGHT]) {
 	deleteBlock(current, board);
 	current.y--;
@@ -269,6 +359,13 @@ void blockDown(int(*board)[MAP_HEIGHT]) {
 	}
 }
 
+
+/**
+* initialize board and make first block
+*
+* @param board
+*
+*/
 void initialize(int(*board)[MAP_HEIGHT])
 {
 	for (int x = 0; x < 12; x++) {
@@ -282,6 +379,7 @@ void initialize(int(*board)[MAP_HEIGHT])
 		}
 	}
 
+	//Make new 
 	current.x = 5;
 	current.y = 21;
 	current.type = random(7) + 1;
@@ -294,6 +392,12 @@ void initialize(int(*board)[MAP_HEIGHT])
 	info.Framecounter = 0;
 }
 
+/**
+* Load Bitmap Resources
+*
+* @param hdc
+* @param hinstance
+*/
 void MakeDCformBitmaps(HDC hdc, HINSTANCE hInstance) {
 	hMemDC = CreateCompatibleDC(hdc);
 	HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 24 * 10, 24 * 20);
@@ -303,18 +407,28 @@ void MakeDCformBitmaps(HDC hdc, HINSTANCE hInstance) {
 	hBitmap = LoadBitmap(hInstance, "BLOCKS");
 	hBlockPrev = (HBITMAP)SelectObject(hBlockDC, hBitmap);
 
+	
 }
 
+/**
+* if Game is not over 
+* block down
+*
+*/
 void Update(int(*board)[MAP_HEIGHT])
 {
 	if (info.bUpdateStop == TRUE)
 		return;
 
 	blockDown(board);
-}
+}   
 
+
+/**
+*  Release resources
+*/
 void Destory()
-{
+{	
 	HBITMAP hBitmap = (HBITMAP)SelectObject(hMemDC, hMemPrev);
 	DeleteObject(hBitmap);
 	DeleteObject(hMemDC);
@@ -322,230 +436,4 @@ void Destory()
 	hBitmap = (HBITMAP)SelectObject(hBlockDC, hBlockPrev);
 	DeleteObject(hBitmap);
 	DeleteObject(hBlockDC);
-}
-
-
-
-
-
-
-
-
-//for AI
-
- /**
- * Get best position block for AI.
- *
- * @param : current block
- * @param : current board
- *
- * @return : best position BLOCK
- */
-STATUS getBlock(STATUS s, int(*board)[MAP_HEIGHT]) {
-	STATUS highest = s;
-	double highest_score = -9999999999999.0;
-
-	for (int i = 1; i <= 10; i++) {
-		s.x = i;
-		for (int j = 0; j < block[s.type].rotate; j++) {
-			++s.rotate;
-			double temp = calcAIScore(s, board);
-			if (temp > highest_score) {
-				highest_score = temp;
-				highest = s;
-			}
-		}
-	}
-
-	return makeDropResultBlock(highest, board);
-}
-
-
-
-
-/**
-* Calculate AI score.
-*
-* @param block
-* @param current board
-*
-* @return AI score
-*/
-double calcAIScore(STATUS s, int(*board)[MAP_HEIGHT]) {
-	int temp[MAP_WIDTH][MAP_HEIGHT];
-	copyBoard(temp, board);
-
-	deleteBlock(current, temp);
-	s = makeDropResultBlock(s, temp);
-
-	if (!putBlock(s, temp))
-		return -9999999999999.0;
-
-
-
-	double EFG = getEFGI(s, temp);
-	double D = getD(temp);
-	double ABC = getABCH(temp);
-
-
-	return ABC + D + EFG;
-
-}
-
-
-
-/**
-* Copy current board to temp board.
-*
-* @param temp board
-* @param current board
-*
-* @return void
-*/
-void copyBoard(int(*temp)[MAP_HEIGHT], int(*board)[MAP_HEIGHT]) {
-	for (int i = 0; i < MAP_WIDTH; i++)
-		for (int j = 0; j < MAP_HEIGHT; j++)
-			temp[i][j] = board[i][j];
-}
-
-
-
-/**
-* Calculate AI score of condition A, B, C, H 
-*
-* @param temp board
-*
-* @return AI score of condition A, B, C, H
-*/
-double getABCH(int(*temp)[MAP_HEIGHT]) {
-	int A = 0;
-	int B = 0;
-	int C = 0;
-	int H = INT_MAX;
-
-	for (int x = 1; x < MAP_WIDTH - 1; x++) {
-		int height = 0;
-		int firstEmpty = TRUE;
-		for (int y = 1; y < MAP_HEIGHT; y++) {
-			if (temp[x][y] != 0)
-				height = y;
-		}
-		for (int y = 1; y <= height; y++) {
-			if (temp[x][y] == 0) {
-				B++;
-				if (firstEmpty) {
-					firstEmpty = FALSE;
-					for (int i = y; i <= height; i++) {
-						if (temp[x][i] != 0)
-							C++;
-					}
-				}
-
-			}
-		}
-		if (height > A)
-			A = height;
-		if (height < H)
-			H = height;
-	}
-	H = A - H;
-	return A * AI_A + B * AI_B + C * AI_C + H * AI_H;
-}
-
-
-/**
-* Calculate AI score of condition D
-*
-* @param temp board
-*
-* @return AI score of condition D
-*/
-double getD(int(*temp)[MAP_HEIGHT]) {
-	int cnt = 0;
-	for (int y = 1; y < 23; y++) {
-		int flag = TRUE;
-		for (int x = 1; x <= 10; x++) {
-			if (temp[x][y] == 0) {
-				flag = FALSE;
-			}
-		}
-		if (flag) {
-			cnt++;
-			for (int j = y; j < 23; j++) {
-				for (int i = 1; i <= 10; i++) {
-					temp[i][j] = temp[i][j + 1];
-				}
-			}
-			y--;
-		}
-	}
-	return cnt * AI_D;
-}
-
-
-/**
-* Calculate AI score of condition E, F, G, I
-*
-* @param put block
-* @param temp board
-*
-* @return AI score of condition E, F, G, I
-*/
-double getEFGI(STATUS s, int(*temp)[MAP_HEIGHT]) {
-	int I=0;
-	deleteBlock(s, temp);
-
-	int cntE = 0;
-	int cntF = 0;
-	int cntG = 0;
-
-	if (s.x == 1 || s.x == 11)
-		cntF++;
-	if (s.y == 1)
-		cntG++;
-
-	if (temp[s.x + 1][s.y] != 0 && s.x + 1 != 1 && s.x + 1 != 11)
-		cntE++;
-	if (temp[s.x - 1][s.y] != 0 && s.x - 1 != 1 && s.x + 1 != 11)
-		cntE++;
-	if (temp[s.x][s.y + 1] != 0 && s.y + 1 != 1)
-		cntE++;
-	if (temp[s.x][s.y - 1] != 0 && s.y + 1 != 1)
-		cntE++;
-
-
-	for (int i = 0; i < 3; i++) {
-		int dx = block[s.type].p[i].x;
-		int dy = block[s.type].p[i].y;
-		int r = s.rotate % block[s.type].rotate;
-		for (int j = 0; j < r; j++) {
-			int nx = dx;
-			int	ny = dy;
-			dx = ny;
-			dy = -nx;
-		}
-		if (s.y + dy > I)
-			I = s.y + dy;
-
-		if (s.x + dx == 1 || s.x + dx == 11)
-			cntF++;
-		if (s.y + dy == 1)
-			cntG++;
-
-		if (temp[s.x + 1 + dx][s.y + dy] != 0 && s.x + dx + 1 != 1 && s.x + dx + 1 != 11)
-			cntE++;
-		if (temp[s.x - 1 + dx][s.y + dy] != 0 && s.x + dx - 1 != 1 && s.x + dx + 1 != 11)
-			cntE++;
-		if (temp[s.x + dx][s.y + 1 + dy] != 0 && s.y + dy + 1 != 1)
-			cntE++;
-		if (temp[s.x + dx][s.y - 1 + dy] != 0 && s.y + 1 + dy != 1)
-			cntE++;
-
-	}
-	putBlock(s, temp);
-
-	 
-
-	return cntE * AI_E + cntF * AI_F + cntG * AI_G + I * AI_I;
-
 }
